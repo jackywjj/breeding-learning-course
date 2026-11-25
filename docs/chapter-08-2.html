@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>08-2｜基因组质控与样本身份 / Genomic quality control and sample identity – 我用做软件的方式学育种</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./chapter-08-3.html" rel="next">
+<link href="./chapter-08-1.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6774357434628ad73da102cd638e03af.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="sample.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">跳至主要内容</a>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="网站">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">我用做软件的方式学育种</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="展开或折叠导航栏" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./contents.html" aria-current="page"> 
+<span class="menu-text">全书目录</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="搜索"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="工具栏">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="路径"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-06-0.html">第二篇 · 遗传评估 / Part II · Genetic Evaluation</a></li><li class="breadcrumb-item"><a href="./chapter-08-0.html">08 · 基因组与三类 BLUP / Genomics and three BLUP approaches</a></li><li class="breadcrumb-item"><a href="./chapter-08-2.html">基因组质控与样本身份 / Genomic quality control and sample identity</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto" aria-label="区域">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">前言</span> <span class="course-nav-en" lang="en">Preface</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./contents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">00 · 目录</span> <span class="course-nav-en" lang="en">Contents</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><span class="course-nav-zh" lang="zh">第一篇 · 基础</span> <span class="course-nav-en" lang="en">Part I · Foundations</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-01-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><span class="course-nav-zh" lang="zh">01 · 育种与遗传基础</span> <span class="course-nav-en" lang="en">Breeding and inheritance</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false" aria-label="展开或折叠此栏: 01 · 育种与遗传基础 / Breeding and inheritance">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-01-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">数量遗传学与遗传作用</span> <span class="course-nav-en" lang="en">Quantitative genetics and genetic effects</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-01-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传改良与杂交体系</span> <span class="course-nav-en" lang="en">Genetic improvement and crossbreeding systems</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-02-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><span class="course-nav-zh" lang="zh">02 · 性状与类型</span> <span class="course-nav-en" lang="en">Traits and their types</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false" aria-label="展开或折叠此栏: 02 · 性状与类型 / Traits and their types">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">猪性状、EBV 与后代差异</span> <span class="course-nav-en" lang="en">Pig traits, EBVs, and progeny differences</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">阈值模型与分类性状</span> <span class="course-nav-en" lang="en">Threshold models and categorical traits</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">重复记录与永久环境</span> <span class="course-nav-en" lang="en">Repeated records and permanent environment</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-03-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><span class="course-nav-zh" lang="zh">03 · 统计基础：从一行数据到一个结论</span> <span class="course-nav-en" lang="en">Statistics: from a data row to a conclusion</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="false" aria-label="展开或折叠此栏: 03 · 统计基础：从一行数据到一个结论 / Statistics: from a data row to a conclusion">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">均值向量与协方差矩阵详读</span> <span class="course-nav-en" lang="en">Mean vectors and covariance matrices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">相关系数与回归辨析详读</span> <span class="course-nav-en" lang="en">Correlation versus regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">均值方差标准差与数值校验详读</span> <span class="course-nav-en" lang="en">Mean, variance, standard deviation, and numerical checks</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-04-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><span class="course-nav-zh" lang="zh">04 · 遗传参数与相关性</span> <span class="course-nav-en" lang="en">Genetic parameters and correlations</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="false" aria-label="展开或折叠此栏: 04 · 遗传参数与相关性 / Genetic parameters and correlations">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-04-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传力与遗传参数</span> <span class="course-nav-en" lang="en">Heritability and genetic parameters</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-04-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传相关与环境互作</span> <span class="course-nav-en" lang="en">Genetic correlation and environmental interaction</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-05-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-6-label"><span class="course-nav-zh" lang="zh">05 · 家系、系谱与近交</span> <span class="course-nav-en" lang="en">Families, pedigrees, and inbreeding</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="false" aria-label="展开或折叠此栏: 05 · 家系、系谱与近交 / Families, pedigrees, and inbreeding">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">家系、同胞与系谱术语</span> <span class="course-nav-en" lang="en">Families, siblings, and pedigree terms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">亲缘、共祖与近交计算</span> <span class="course-nav-en" lang="en">Relationship, kinship, and inbreeding calculations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">动物模型与系谱信息</span> <span class="course-nav-en" lang="en">Animal models and pedigree information</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label"><span class="course-nav-zh" lang="zh">第二篇 · 遗传评估</span> <span class="course-nav-en" lang="en">Part II · Genetic Evaluation</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-06-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-8-label"><span class="course-nav-zh" lang="zh">06 · 育种值与准确度</span> <span class="course-nav-en" lang="en">Breeding values and accuracy</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="false" aria-label="展开或折叠此栏: 06 · 育种值与准确度 / Breeding values and accuracy">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-06-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">准确度与估计风险</span> <span class="course-nav-en" lang="en">Accuracy and estimation risk</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-06-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">PEV、可靠性与输出字段</span> <span class="course-nav-en" lang="en">PEV, reliability, and output fields</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-07-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-9-label"><span class="course-nav-zh" lang="zh">07 · 育种值计算与 BLUP</span> <span class="course-nav-en" lang="en">Breeding-value Calculation and BLUP</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="false" aria-label="展开或折叠此栏: 07 · 育种值计算与 BLUP / Breeding-value Calculation and BLUP">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">混合模型方程逐步推导</span> <span class="course-nav-en" lang="en">Mixed model equations step by step</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">REML 与方差组分</span> <span class="course-nav-en" lang="en">REML and variance components</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">多性状评估与信息借用</span> <span class="course-nav-en" lang="en">Multi-trait evaluation and information borrowing</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-08-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-10-label"><span class="course-nav-zh" lang="zh">08 · 基因组与三类 BLUP</span> <span class="course-nav-en" lang="en">Genomics and three BLUP approaches</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-controls="quarto-sidebar-section-10" aria-expanded="true" aria-label="展开或折叠此栏: 08 · 基因组与三类 BLUP / Genomics and three BLUP approaches">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-10" aria-labelledby="quarto-sidebar-section-10-label" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">单步关系矩阵 H</span> <span class="course-nav-en" lang="en">The single-step relationship matrix H</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-2.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">基因组质控与样本身份</span> <span class="course-nav-en" lang="en">Genomic quality control and sample identity</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">参考群体与基因组选择</span> <span class="course-nav-en" lang="en">Reference populations and genomic selection</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-controls="quarto-sidebar-section-11" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-11-label"><span class="course-nav-zh" lang="zh">第三篇 · 育种决策</span> <span class="course-nav-en" lang="en">Part III · Breeding Decisions</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-11" aria-labelledby="quarto-sidebar-section-11-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-09-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-12-label"><span class="course-nav-zh" lang="zh">09 · 选择、选配与遗传进展</span> <span class="course-nav-en" lang="en">Selection, mating, and genetic progress</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-controls="quarto-sidebar-section-12" aria-expanded="false" aria-label="展开或折叠此栏: 09 · 选择、选配与遗传进展 / Selection, mating, and genetic progress">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-12" aria-labelledby="quarto-sidebar-section-12-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">多性状选择：先定目标，再分配选择压力</span> <span class="course-nav-en" lang="en">Multi-trait selection: objectives and emphasis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">综合选择指数：一个分数如何连接多个 EBV</span> <span class="course-nav-en" lang="en">Selection indexes: connecting multiple EBVs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">同期群：先确认谁有资格直接比较</span> <span class="course-nav-en" lang="en">Contemporary groups: who can be directly compared?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传联系：让不同组之间有一座桥</span> <span class="course-nav-en" lang="en">Connectedness: a bridge between groups</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">选择反应：每代改良与每年改良</span> <span class="course-nav-en" lang="en">Selection response: per generation versus per year</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-controls="quarto-sidebar-section-13" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-13-label"><span class="course-nav-zh" lang="zh">附录</span> <span class="course-nav-en" lang="en">Appendices</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-13" aria-labelledby="quarto-sidebar-section-13-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-11-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">附录 A · 中英术语速查</span> <span class="course-nav-en" lang="en">Appendix A · Bilingual Glossary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-12-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">附录 B · 资料来源</span> <span class="course-nav-en" lang="en">Appendix B · Sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">本页目录</h2>
+   
+  <ul>
+  <li><a href="#来源要点-source-points" id="toc-来源要点-source-points" class="nav-link active" data-scroll-target="#来源要点-source-points">01 · 来源要点 / Source points</a></li>
+  <li><a href="#先定义-012-define-0-1-and-2" id="toc-先定义-012-define-0-1-and-2" class="nav-link" data-scroll-target="#先定义-012-define-0-1-and-2">02 · 先定义 0、1、2 / Define 0, 1, and 2</a></li>
+  <li><a href="#手算检出率-calculate-call-rates" id="toc-手算检出率-calculate-call-rates" class="nav-link" data-scroll-target="#手算检出率-calculate-call-rates">03 · 手算检出率 / Calculate call rates</a></li>
+  <li><a href="#手算等位基因频率与-maf-calculate-allele-frequency-and-maf" id="toc-手算等位基因频率与-maf-calculate-allele-frequency-and-maf" class="nav-link" data-scroll-target="#手算等位基因频率与-maf-calculate-allele-frequency-and-maf">04 · 手算等位基因频率与 MAF / Calculate allele frequency and MAF</a></li>
+  <li><a href="#孟德尔一致性与样本身份-mendelian-consistency-and-identity" id="toc-孟德尔一致性与样本身份-mendelian-consistency-and-identity" class="nav-link" data-scroll-target="#孟德尔一致性与样本身份-mendelian-consistency-and-identity">05 · 孟德尔一致性与样本身份 / Mendelian consistency and identity</a></li>
+  <li><a href="#hwe-检查怎样理解-interpret-hwe-checks" id="toc-hwe-检查怎样理解-interpret-hwe-checks" class="nav-link" data-scroll-target="#hwe-检查怎样理解-interpret-hwe-checks">06 · HWE 检查怎样理解 / Interpret HWE checks</a></li>
+  <li><a href="#清洗后重新核对矩阵和编号-reconcile-ids-and-matrices-after-cleaning" id="toc-清洗后重新核对矩阵和编号-reconcile-ids-and-matrices-after-cleaning" class="nav-link" data-scroll-target="#清洗后重新核对矩阵和编号-reconcile-ids-and-matrices-after-cleaning">07 · 清洗后重新核对矩阵和编号 / Reconcile IDs and Matrices After Cleaning</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="路径"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-06-0.html">第二篇 · 遗传评估 / Part II · Genetic Evaluation</a></li><li class="breadcrumb-item"><a href="./chapter-08-0.html">08 · 基因组与三类 BLUP / Genomics and three BLUP approaches</a></li><li class="breadcrumb-item"><a href="./chapter-08-2.html">基因组质控与样本身份 / Genomic quality control and sample identity</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">08-2｜基因组质控与样本身份 / Genomic quality control and sample identity</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><a href="./contents.html">目录 / Contents</a> · <a href="./chapter-08-0.html">返回主文 / Main chapter</a></p>
+<p>我把分型质控当作数据接入的一环，既看检出率，也核对样本和动物身份以及清洗前后的编号表。<br>
+I treat genotype QC as part of data ingestion, checking call rates, sample and animal identities, and ID lists before and after cleaning.</p>
+<p>原始来源是 <a href="https://masuday.github.io/blupf90_tutorial/genomic_qc.html">Masuda：Quality control of SNP markers</a>，本篇解释质量指标与文件衔接，不执行真实样本剔除。<br>
+The original source is <a href="https://masuday.github.io/blupf90_tutorial/genomic_qc.html">Masuda: Quality control of SNP markers</a>, with this note explaining metrics and file alignment without filtering real samples.</p>
+<p>本篇于 <strong>2026-10-18</strong> 核对来源，来源要点采用概括，教学数据与演算均为自拟。<br>
+Sources were checked on <strong>2026-10-18</strong>, source points are summarized, and teaching data and calculations are original.</p>
+<blockquote class="blockquote">
+<p><strong>我想弄懂的事｜矩阵算得出来，是否就代表基因型和猪只身份正确？</strong><br>
+<strong>What I want to understand | Does a computable matrix establish correct genotypes and animal identities?</strong></p>
+</blockquote>
+<section id="来源要点-source-points" class="level2">
+<h2 class="anchored" data-anchor-id="来源要点-source-points">01 · 来源要点 / Source points</h2>
+<p>原页区分位点和动物的质控，并强调清洗后的基因型与矩阵必须重新对齐。<br>
+The page distinguishes marker and animal QC and emphasizes realigning cleaned genotypes with relationship matrices.</p>
+<p>作者建议将清洗文件、重建矩阵和评估分步处理，避免输出矩阵还保留旧编号造成混乱。<br>
+The author recommends separating cleaned-file creation, matrix rebuilding, and evaluation to avoid confusion from matrices retaining old IDs.</p>
+</section>
+<section id="先定义-012-define-0-1-and-2" class="level2">
+<h2 class="anchored" data-anchor-id="先定义-012-define-0-1-and-2">02 · 先定义 0、1、2 / Define 0, 1, and 2</h2>
+<p>设每个数表示该 SNP 上等位基因 B 的拷贝数，则 0=AA、1=AB、2=BB，缺失另行标记。<br>
+Let each number count B alleles at a SNP, so 0=AA, 1=AB, and 2=BB, with missingness coded separately.</p>
+<p>0 不是差基因、2 不是好基因，编码方向与性状效应是不同问题。<br>
+Zero is not a bad genotype and two is not a good genotype, because coding direction differs from trait effect.</p>
+<p>缺失不能随便填 0，否则会把未检测成功伪装成 AA。<br>
+Missing values must not be arbitrarily filled with zero, which would misrepresent failed detection as AA.</p>
+</section>
+<section id="手算检出率-calculate-call-rates" class="level2">
+<h2 class="anchored" data-anchor-id="手算检出率-calculate-call-rates">03 · 手算检出率 / Calculate call rates</h2>
+<p>假设有下面 3 头猪、4 个标记的教学数据，NA 表示缺失。<br>
+Suppose the teaching data below contain three pigs and four markers, with NA indicating missingness.</p>
+<pre class="csv"><code>animal,M1,M2,M3,M4
+P1,0,1,NA,2
+P2,1,1,2,0
+P3,2,0,1,NA</code></pre>
+<p><strong>动物检出率</strong>是该动物成功检测的标记数除以计划标记数，所以 P1、P2、P3 分别为 0.75、1、0.75。<br>
+An <strong>animal call rate</strong> divides successfully called markers by planned markers, giving P1, P2, and P3 rates 0.75, 1, and 0.75.</p>
+<p><strong>标记检出率</strong>是该位点成功检测的动物数除以待检测动物数，所以 M3、M4 都为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">2/3</annotation></semantics></math>。<br>
+A <strong>marker call rate</strong> divides animals successfully called at that marker by animals tested, giving <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">2/3</annotation></semantics></math> for both M3 and M4.</p>
+<p>例如选择阈值 0.8 时，P1、P3 与 M3、M4 会分别触及相应维度的阈值，但该数字仅为教学假设。<br>
+A hypothetical threshold of 0.8 flags P1, P3, M3, and M4 in their respective dimensions, but this threshold is illustrative only.</p>
+<p>过滤动物会改变剩余位点统计，过滤位点也会改变动物统计，因此应记录步骤顺序、分母与最终保留集合。<br>
+Filtering animals changes marker statistics and filtering markers changes animal statistics, so record order, denominators, and final retained sets.</p>
+</section>
+<section id="手算等位基因频率与-maf-calculate-allele-frequency-and-maf" class="level2">
+<h2 class="anchored" data-anchor-id="手算等位基因频率与-maf-calculate-allele-frequency-and-maf">04 · 手算等位基因频率与 MAF / Calculate allele frequency and MAF</h2>
+<p><strong>等位基因频率 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>B</mi></msub><annotation encoding="application/x-tex">p_B</annotation></semantics></math></strong>是 B 拷贝数除以成功检测个体提供的全部拷贝数。<br>
+<strong>Allele frequency <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>B</mi></msub><annotation encoding="application/x-tex">p_B</annotation></semantics></math></strong> divides B-copy count by all allele copies from successfully called animals.</p>
+<p>M3 的有效编码为 2、1，共有 3 个 B 拷贝和 4 个总拷贝。<br>
+The called M3 genotypes are 2 and 1, giving three B copies among four total copies.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>B</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo>×</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.75</mn><mo>,</mo><mspace width="2.0em"></mspace><mi>M</mi><mi>A</mi><mi>F</mi><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>B</mi></msub><mo>,</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>B</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">
+p_B=(2+1)/(2\times2)=0.75,\qquad
+MAF=\min(p_B,1-p_B)=0.25
+</annotation></semantics></math></p>
+<p><strong>MAF</strong>是次要等位基因频率，不是次要基因型所占动物比例。<br>
+<strong>MAF</strong> is minor allele frequency, not the fraction of animals with the less common genotype.</p>
+<p>若一个标记在保留群体中完全没有变异，称为<strong>单态</strong>，通常不能提供该群体内的关系差异信息。<br>
+A marker with no variation in the retained population is <strong>monomorphic</strong> and generally supplies no within-population relationship contrast.</p>
+</section>
+<section id="孟德尔一致性与样本身份-mendelian-consistency-and-identity" class="level2">
+<h2 class="anchored" data-anchor-id="孟德尔一致性与样本身份-mendelian-consistency-and-identity">05 · 孟德尔一致性与样本身份 / Mendelian consistency and identity</h2>
+<p>在同一编码方向下，某已知亲本为 AA 时，正常孟德尔遗传下不能产生 BB 子代。<br>
+Under consistent coding, a known AA parent cannot produce a BB offspring through ordinary Mendelian inheritance.</p>
+<p>出现大量这类矛盾时，要核对亲子身份、样本错配、等位基因方向和检测错误，而不是直接认定系谱真实或芯片真实。<br>
+Numerous such conflicts require checking parentage, sample swaps, allele orientation, and assay errors rather than automatically trusting either pedigree or chip.</p>
+<p>极高相似度可能提示重复样本，但需要结合动物身份与真实生物学关系判断。<br>
+Extremely high similarity can suggest duplicate samples but requires interpretation with identities and biological relationships.</p>
+<p><strong>交叉编号表</strong>把样本编号、原始猪号、软件重编号和矩阵行号连接起来，是防止身份错位的关键。<br>
+A <strong>cross-reference table</strong> connects sample ID, original animal ID, software ID, and matrix row, helping prevent identity mismatches.</p>
+</section>
+<section id="hwe-检查怎样理解-interpret-hwe-checks" class="level2">
+<h2 class="anchored" data-anchor-id="hwe-检查怎样理解-interpret-hwe-checks">06 · HWE 检查怎样理解 / Interpret HWE checks</h2>
+<p><strong>哈代–温伯格平衡 HWE</strong>是在特定随机交配等条件下，基因型频率与等位基因频率对应的一种基准。<br>
+<strong>Hardy–Weinberg equilibrium (HWE)</strong> is a baseline relating genotype and allele frequencies under conditions including random mating.</p>
+<p>在二等位的基准下，AA、AB、BB 期望频率分别为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>B</mi></msub><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(1-p_B)^2</annotation></semantics></math>、<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><msub><mi>p</mi><mi>B</mi></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>B</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">2p_B(1-p_B)</annotation></semantics></math>、<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>p</mi><mi>B</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">p_B^2</annotation></semantics></math>。<br>
+For a biallelic baseline, expected AA, AB, and BB frequencies are <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>B</mi></msub><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(1-p_B)^2</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><msub><mi>p</mi><mi>B</mi></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>B</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">2p_B(1-p_B)</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>p</mi><mi>B</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">p_B^2</annotation></semantics></math>.</p>
+<p>偏离可能来自检测问题，也可能来自选择、群体混合或近交，不能在选育群体中把每个偏离都直接当作错误。<br>
+Deviations can reflect assay problems, selection, population mixture, or inbreeding, so not every deviation in a selected population is an error.</p>
+</section>
+<section id="清洗后重新核对矩阵和编号-reconcile-ids-and-matrices-after-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="清洗后重新核对矩阵和编号-reconcile-ids-and-matrices-after-cleaning">07 · 清洗后重新核对矩阵和编号 / Reconcile IDs and Matrices After Cleaning</h2>
+<p>删除一头低检出率动物后，我会核对矩阵实际保留的行列和顺序，也会查软件是否保留或填零。<br>
+After excluding an animal with a low call rate, I check the matrix’s retained rows, columns, and order, as well as whether the software retains or zero-fills entries.</p>
+<p>新的编号表要与重建后的矩阵对齐，若沿用原矩阵，就按软件行为和清洗结果逐项建立映射。<br>
+A new ID file must match the rebuilt matrix, or if the existing matrix is reused, IDs must be mapped explicitly according to the software’s behavior and cleaning results.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"可滚动的代码","output":"可滚动的输出"};
+  </script>
+<nav class="page-navigation" aria-label="页面">
+  <div class="nav-page nav-page-previous">
+      <a href="./chapter-08-1.html" class="pagination-link" aria-label="单步关系矩阵 H / The single-step relationship matrix H">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">单步关系矩阵 H / The single-step relationship matrix H</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./chapter-08-3.html" class="pagination-link" aria-label="参考群体与基因组选择 / Reference populations and genomic selection">
+        <span class="nav-page-text">参考群体与基因组选择 / Reference populations and genomic selection</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

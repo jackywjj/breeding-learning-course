@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>03-2｜相关系数与回归辨析详读 / Correlation versus regression – 我用做软件的方式学育种</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./chapter-03-3.html" rel="next">
+<link href="./chapter-03-1.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6774357434628ad73da102cd638e03af.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="sample.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">跳至主要内容</a>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="网站">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">我用做软件的方式学育种</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="展开或折叠导航栏" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./contents.html" aria-current="page"> 
+<span class="menu-text">全书目录</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="搜索"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="工具栏">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="路径"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-01-0.html">第一篇 · 基础 / Part I · Foundations</a></li><li class="breadcrumb-item"><a href="./chapter-03-0.html">03 · 统计基础：从一行数据到一个结论 / Statistics: from a data row to a conclusion</a></li><li class="breadcrumb-item"><a href="./chapter-03-2.html">相关系数与回归辨析详读 / Correlation versus regression</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto" aria-label="区域">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">前言</span> <span class="course-nav-en" lang="en">Preface</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./contents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">00 · 目录</span> <span class="course-nav-en" lang="en">Contents</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><span class="course-nav-zh" lang="zh">第一篇 · 基础</span> <span class="course-nav-en" lang="en">Part I · Foundations</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-01-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><span class="course-nav-zh" lang="zh">01 · 育种与遗传基础</span> <span class="course-nav-en" lang="en">Breeding and inheritance</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false" aria-label="展开或折叠此栏: 01 · 育种与遗传基础 / Breeding and inheritance">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-01-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">数量遗传学与遗传作用</span> <span class="course-nav-en" lang="en">Quantitative genetics and genetic effects</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-01-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传改良与杂交体系</span> <span class="course-nav-en" lang="en">Genetic improvement and crossbreeding systems</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-02-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><span class="course-nav-zh" lang="zh">02 · 性状与类型</span> <span class="course-nav-en" lang="en">Traits and their types</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false" aria-label="展开或折叠此栏: 02 · 性状与类型 / Traits and their types">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">猪性状、EBV 与后代差异</span> <span class="course-nav-en" lang="en">Pig traits, EBVs, and progeny differences</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">阈值模型与分类性状</span> <span class="course-nav-en" lang="en">Threshold models and categorical traits</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">重复记录与永久环境</span> <span class="course-nav-en" lang="en">Repeated records and permanent environment</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-03-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><span class="course-nav-zh" lang="zh">03 · 统计基础：从一行数据到一个结论</span> <span class="course-nav-en" lang="en">Statistics: from a data row to a conclusion</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true" aria-label="展开或折叠此栏: 03 · 统计基础：从一行数据到一个结论 / Statistics: from a data row to a conclusion">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">均值向量与协方差矩阵详读</span> <span class="course-nav-en" lang="en">Mean vectors and covariance matrices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-2.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">相关系数与回归辨析详读</span> <span class="course-nav-en" lang="en">Correlation versus regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">均值方差标准差与数值校验详读</span> <span class="course-nav-en" lang="en">Mean, variance, standard deviation, and numerical checks</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-04-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><span class="course-nav-zh" lang="zh">04 · 遗传参数与相关性</span> <span class="course-nav-en" lang="en">Genetic parameters and correlations</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="false" aria-label="展开或折叠此栏: 04 · 遗传参数与相关性 / Genetic parameters and correlations">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-04-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传力与遗传参数</span> <span class="course-nav-en" lang="en">Heritability and genetic parameters</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-04-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传相关与环境互作</span> <span class="course-nav-en" lang="en">Genetic correlation and environmental interaction</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-05-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-6-label"><span class="course-nav-zh" lang="zh">05 · 家系、系谱与近交</span> <span class="course-nav-en" lang="en">Families, pedigrees, and inbreeding</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="false" aria-label="展开或折叠此栏: 05 · 家系、系谱与近交 / Families, pedigrees, and inbreeding">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">家系、同胞与系谱术语</span> <span class="course-nav-en" lang="en">Families, siblings, and pedigree terms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">亲缘、共祖与近交计算</span> <span class="course-nav-en" lang="en">Relationship, kinship, and inbreeding calculations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">动物模型与系谱信息</span> <span class="course-nav-en" lang="en">Animal models and pedigree information</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label"><span class="course-nav-zh" lang="zh">第二篇 · 遗传评估</span> <span class="course-nav-en" lang="en">Part II · Genetic Evaluation</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-06-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-8-label"><span class="course-nav-zh" lang="zh">06 · 育种值与准确度</span> <span class="course-nav-en" lang="en">Breeding values and accuracy</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="false" aria-label="展开或折叠此栏: 06 · 育种值与准确度 / Breeding values and accuracy">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-06-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">准确度与估计风险</span> <span class="course-nav-en" lang="en">Accuracy and estimation risk</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-06-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">PEV、可靠性与输出字段</span> <span class="course-nav-en" lang="en">PEV, reliability, and output fields</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-07-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-9-label"><span class="course-nav-zh" lang="zh">07 · 育种值计算与 BLUP</span> <span class="course-nav-en" lang="en">Breeding-value Calculation and BLUP</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="false" aria-label="展开或折叠此栏: 07 · 育种值计算与 BLUP / Breeding-value Calculation and BLUP">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">混合模型方程逐步推导</span> <span class="course-nav-en" lang="en">Mixed model equations step by step</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">REML 与方差组分</span> <span class="course-nav-en" lang="en">REML and variance components</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">多性状评估与信息借用</span> <span class="course-nav-en" lang="en">Multi-trait evaluation and information borrowing</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-08-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-10-label"><span class="course-nav-zh" lang="zh">08 · 基因组与三类 BLUP</span> <span class="course-nav-en" lang="en">Genomics and three BLUP approaches</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-controls="quarto-sidebar-section-10" aria-expanded="false" aria-label="展开或折叠此栏: 08 · 基因组与三类 BLUP / Genomics and three BLUP approaches">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-10" aria-labelledby="quarto-sidebar-section-10-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">单步关系矩阵 H</span> <span class="course-nav-en" lang="en">The single-step relationship matrix H</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">基因组质控与样本身份</span> <span class="course-nav-en" lang="en">Genomic quality control and sample identity</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">参考群体与基因组选择</span> <span class="course-nav-en" lang="en">Reference populations and genomic selection</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-controls="quarto-sidebar-section-11" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-11-label"><span class="course-nav-zh" lang="zh">第三篇 · 育种决策</span> <span class="course-nav-en" lang="en">Part III · Breeding Decisions</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-11" aria-labelledby="quarto-sidebar-section-11-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-09-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-12-label"><span class="course-nav-zh" lang="zh">09 · 选择、选配与遗传进展</span> <span class="course-nav-en" lang="en">Selection, mating, and genetic progress</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-controls="quarto-sidebar-section-12" aria-expanded="false" aria-label="展开或折叠此栏: 09 · 选择、选配与遗传进展 / Selection, mating, and genetic progress">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-12" aria-labelledby="quarto-sidebar-section-12-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">多性状选择：先定目标，再分配选择压力</span> <span class="course-nav-en" lang="en">Multi-trait selection: objectives and emphasis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">综合选择指数：一个分数如何连接多个 EBV</span> <span class="course-nav-en" lang="en">Selection indexes: connecting multiple EBVs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">同期群：先确认谁有资格直接比较</span> <span class="course-nav-en" lang="en">Contemporary groups: who can be directly compared?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传联系：让不同组之间有一座桥</span> <span class="course-nav-en" lang="en">Connectedness: a bridge between groups</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">选择反应：每代改良与每年改良</span> <span class="course-nav-en" lang="en">Selection response: per generation versus per year</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-controls="quarto-sidebar-section-13" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-13-label"><span class="course-nav-zh" lang="zh">附录</span> <span class="course-nav-en" lang="en">Appendices</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-13" aria-labelledby="quarto-sidebar-section-13-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-11-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">附录 A · 中英术语速查</span> <span class="course-nav-en" lang="en">Appendix A · Bilingual Glossary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-12-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">附录 B · 资料来源</span> <span class="course-nav-en" lang="en">Appendix B · Sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">本页目录</h2>
+   
+  <ul>
+  <li><a href="#原文重点与短摘-source-focus-and-short-excerpt" id="toc-原文重点与短摘-source-focus-and-short-excerpt" class="nav-link active" data-scroll-target="#原文重点与短摘-source-focus-and-short-excerpt">01 · 原文重点与短摘 / Source focus and short excerpt</a></li>
+  <li><a href="#配对比公式更早决定答案-pairing-determines-what-is-being-measured" id="toc-配对比公式更早决定答案-pairing-determines-what-is-being-measured" class="nav-link" data-scroll-target="#配对比公式更早决定答案-pairing-determines-what-is-being-measured">02 · 配对比公式更早决定答案 / Pairing determines what is being measured</a></li>
+  <li><a href="#从中心化到相关系数-from-centering-to-correlation" id="toc-从中心化到相关系数-from-centering-to-correlation" class="nav-link" data-scroll-target="#从中心化到相关系数-from-centering-to-correlation">03 · 从中心化到相关系数 / From centering to correlation</a>
+  <ul class="collapse">
+  <li><a href="#用标准化分数再算一次-recalculate-with-standardized-scores" id="toc-用标准化分数再算一次-recalculate-with-standardized-scores" class="nav-link" data-scroll-target="#用标准化分数再算一次-recalculate-with-standardized-scores">用标准化分数再算一次 / Recalculate with standardized scores</a></li>
+  </ul></li>
+  <li><a href="#正负强弱与零-sign-strength-and-zero" id="toc-正负强弱与零-sign-strength-and-zero" class="nav-link" data-scroll-target="#正负强弱与零-sign-strength-and-zero">04 · 正负、强弱与零 / Sign, strength, and zero</a></li>
+  <li><a href="#相关与回归为什么不同-why-correlation-and-regression-differ" id="toc-相关与回归为什么不同-why-correlation-and-regression-differ" class="nav-link" data-scroll-target="#相关与回归为什么不同-why-correlation-and-regression-differ">05 · 相关与回归为什么不同 / Why correlation and regression differ</a></li>
+  <li><a href="#r-平方到底表示什么-what-does-r-squared-mean" id="toc-r-平方到底表示什么-what-does-r-squared-mean" class="nav-link" data-scroll-target="#r-平方到底表示什么-what-does-r-squared-mean">06 · r 平方到底表示什么 / What does r squared mean?</a></li>
+  <li><a href="#显著性和-p-值-significance-and-p-values" id="toc-显著性和-p-值-significance-and-p-values" class="nav-link" data-scroll-target="#显著性和-p-值-significance-and-p-values">07 · 显著性和 p 值 / Significance and p-values</a></li>
+  <li><a href="#回到育种三个常见误读-three-common-breeding-misinterpretations" id="toc-回到育种三个常见误读-three-common-breeding-misinterpretations" class="nav-link" data-scroll-target="#回到育种三个常见误读-three-common-breeding-misinterpretations">08 · 回到育种：三个常见误读 / Three common breeding misinterpretations</a></li>
+  <li><a href="#用单位和样本量读-r斜率和-p-值-reading-r-slope-and-p-with-units-and-sample-size" id="toc-用单位和样本量读-r斜率和-p-值-reading-r-slope-and-p-with-units-and-sample-size" class="nav-link" data-scroll-target="#用单位和样本量读-r斜率和-p-值-reading-r-slope-and-p-with-units-and-sample-size">09 · 用单位和样本量读 r、斜率和 p 值 / Reading r, Slope, and p with Units and Sample Size</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="路径"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-01-0.html">第一篇 · 基础 / Part I · Foundations</a></li><li class="breadcrumb-item"><a href="./chapter-03-0.html">03 · 统计基础：从一行数据到一个结论 / Statistics: from a data row to a conclusion</a></li><li class="breadcrumb-item"><a href="./chapter-03-2.html">相关系数与回归辨析详读 / Correlation versus regression</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">03-2｜相关系数与回归辨析详读 / Correlation versus regression</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><a href="./contents.html">目录 / Contents</a> · <a href="./chapter-03-0.html">返回第03章 / Chapter 03</a> · <a href="./chapter-03-1.html">上一篇 / Previous</a> · <a href="./chapter-03-3.html">下一篇 / Next</a></p>
+<p>我会用同一组点分别算相关和回归，再交换横纵变量，看看哪些量保持原样、哪些量跟着预测方向变。<br>
+I use the same points for correlation and regression, then swap the variables to see which quantities stay fixed and which follow the prediction direction.</p>
+<blockquote class="blockquote">
+<p><strong>相关描述一起变化的程度，回归拟合有方向的预测关系，两者都不能自动证明因果。</strong><br>
+<strong>Correlation describes joint variation, while regression fits a directional prediction relationship, and neither automatically establishes causation.</strong></p>
+</blockquote>
+<section id="原文重点与短摘-source-focus-and-short-excerpt" class="level2">
+<h2 class="anchored" data-anchor-id="原文重点与短摘-source-focus-and-short-excerpt">01 · 原文重点与短摘 / Source focus and short excerpt</h2>
+<p>原始来源是 <a href="https://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/correlat.htm">NIST Dataplot：CORRELATION</a>，本次核对日期为 <strong>2026-10-17</strong>。<br>
+The original source is <a href="https://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/correlat.htm">NIST Dataplot: CORRELATION</a>, checked on <strong>2026-10-17</strong>.</p>
+<p>原文短摘“linear relationship between two variables”强调这里衡量的是两个变量之间的线性关系。<br>
+The source excerpt “linear relationship between two variables” emphasizes that this measure concerns linear association.</p>
+<p>原页提供计算式、取值范围、零相关检验和软件用法，本篇主要解释公式和统计含义。<br>
+The page provides the equation, range, zero-correlation test, and software usage, while this note focuses on the equation and interpretation.</p>
+<p>下面的猪群数据、手算过程和反例均为自拟教学材料，回归解释另外核对了 <a href="https://www.itl.nist.gov/div898/handbook/pmd/section4/pmd431.htm">NIST 最小二乘资料</a>。<br>
+The pig data, calculations, and counterexamples below are original teaching material, with regression checked against <a href="https://www.itl.nist.gov/div898/handbook/pmd/section4/pmd431.htm">NIST’s least-squares reference</a>.</p>
+</section>
+<section id="配对比公式更早决定答案-pairing-determines-what-is-being-measured" class="level2">
+<h2 class="anchored" data-anchor-id="配对比公式更早决定答案-pairing-determines-what-is-being-measured">02 · 配对比公式更早决定答案 / Pairing determines what is being measured</h2>
+<p>沿用同一顺序的日增重 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mn>700</mn><mo>,</mo><mn>800</mn><mo>,</mo><mn>800</mn><mo>,</mo><mn>900</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">x=[700,800,800,900]</annotation></semantics></math> 和日采食量 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mn>2</mn><mo>,</mo><mn>3</mn><mo>,</mo><mn>4</mn><mo>,</mo><mn>3</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">y=[2,3,4,3]</annotation></semantics></math>。<br>
+Use the same ordered daily gains <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mn>700</mn><mo>,</mo><mn>800</mn><mo>,</mo><mn>800</mn><mo>,</mo><mn>900</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">x=[700,800,800,900]</annotation></semantics></math> and daily feed intakes <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mn>2</mn><mo>,</mo><mn>3</mn><mo>,</mo><mn>4</mn><mo>,</mo><mn>3</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">y=[2,3,4,3]</annotation></semantics></math>.</p>
+<p>每一对 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>,</mo><msub><mi>y</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(x_i,y_i)</annotation></semantics></math> 对应同一头猪在对应测定条件下的两项记录，而不是任意两组同样长度的数字。<br>
+Each pair <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>,</mo><msub><mi>y</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(x_i,y_i)</annotation></semantics></math> represents two records for the same pig under corresponding measurement conditions, not arbitrary equal-length lists.</p>
+<p><strong>散点图</strong>把每头猪画成一个横坐标为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>、纵坐标为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> 的点，能先发现弯曲、分组和极端值。<br>
+A <strong>scatterplot</strong> represents each pig as a point with horizontal coordinate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> and vertical coordinate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>, helping reveal curvature, groups, and extremes.</p>
+</section>
+<section id="从中心化到相关系数-from-centering-to-correlation" class="level2">
+<h2 class="anchored" data-anchor-id="从中心化到相关系数-from-centering-to-correlation">03 · 从中心化到相关系数 / From centering to correlation</h2>
+<p>先逐列减去均值，得到 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>x</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>100</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>100</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">d_x=[-100,0,0,100]</annotation></semantics></math> 与 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>y</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>1</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">d_y=[-1,0,1,0]</annotation></semantics></math>。<br>
+Subtract the column means to obtain <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>x</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>100</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>100</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">d_x=[-100,0,0,100]</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>y</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>1</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">d_y=[-1,0,1,0]</annotation></semantics></math>.</p>
+<p>再计算三个总量：<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>S</mi><mi>x</mi></msub><mo>=</mo><mn>20</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">SS_x=20{,}000</annotation></semantics></math>、<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>S</mi><mi>y</mi></msub><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">SS_y=2</annotation></semantics></math>、<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>S</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mo>=</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">SS_{xy}=100</annotation></semantics></math>。<br>
+Calculate the three totals: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>S</mi><mi>x</mi></msub><mo>=</mo><mn>20</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">SS_x=20{,}000</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>S</mi><mi>y</mi></msub><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">SS_y=2</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>S</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mo>=</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">SS_{xy}=100</annotation></semantics></math>.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mfrac><mrow><mi>S</mi><msub><mi>S</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub></mrow><msqrt><mrow><mi>S</mi><msub><mi>S</mi><mi>x</mi></msub><mi>S</mi><msub><mi>S</mi><mi>y</mi></msub></mrow></msqrt></mfrac><mo>=</mo><mfrac><mn>100</mn><msqrt><mrow><mn>20</mn><mo>,</mo><mn>000</mn><mo>×</mo><mn>2</mn></mrow></msqrt></mfrac><mo>=</mo><mfrac><mn>100</mn><mn>200</mn></mfrac><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">
+r=\frac{SS_{xy}}{\sqrt{SS_xSS_y}}
+=\frac{100}{\sqrt{20{,}000\times2}}=\frac{100}{200}=0.5
+</annotation></semantics></math></p>
+<p>分子记录共同偏离，分母按两列自身的分散程度缩放，因此结果没有单位。<br>
+The numerator records joint deviations and the denominator scales by each column’s own spread, leaving a unitless result.</p>
+<section id="用标准化分数再算一次-recalculate-with-standardized-scores" class="level3">
+<h3 class="anchored" data-anchor-id="用标准化分数再算一次-recalculate-with-standardized-scores">用标准化分数再算一次 / Recalculate with standardized scores</h3>
+<p>两列分别除以样本标准差后，得到下面的标准化分数，显示值保留六位小数。<br>
+Dividing each centered column by its sample standard deviation gives the following standardized scores, displayed to six decimals.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>z</mi><mi>x</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>1.224745</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>1.224745</mn><mo stretchy="false" form="postfix">]</mo><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>z</mi><mi>y</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>1.224745</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>1.224745</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">
+z_x=[-1.224745,0,0,1.224745],\qquad
+z_y=[-1.224745,0,1.224745,0]
+</annotation></semantics></math></p>
+<p>使用未舍入值相乘求和为 1.5，再除以 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">n-1=3</annotation></semantics></math>，仍然得到 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">r=0.5</annotation></semantics></math>。<br>
+Using unrounded values gives a product sum of 1.5, which divided by <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">n-1=3</annotation></semantics></math> again yields <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">r=0.5</annotation></semantics></math>.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mfrac><mrow><mo>∑</mo><msub><mi>z</mi><mrow><mi>x</mi><mi>i</mi></mrow></msub><msub><mi>z</mi><mrow><mi>y</mi><mi>i</mi></mrow></msub></mrow><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></mfrac><mo>=</mo><mfrac><mn>1.5</mn><mn>3</mn></mfrac><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">
+r=\frac{\sum z_{xi}z_{yi}}{n-1}=\frac{1.5}{3}=0.5
+</annotation></semantics></math></p>
+</section>
+</section>
+<section id="正负强弱与零-sign-strength-and-zero" class="level2">
+<h2 class="anchored" data-anchor-id="正负强弱与零-sign-strength-and-zero">04 · 正负、强弱与零 / Sign, strength, and zero</h2>
+<p>将 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> 换成 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>x</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2x+1</annotation></semantics></math> 会得到 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">r=1</annotation></semantics></math>，换成 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>2</mn><mi>x</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">-2x+1</annotation></semantics></math> 会得到 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mi>−</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">r=-1</annotation></semantics></math>。<br>
+Replacing <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>x</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2x+1</annotation></semantics></math> gives <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">r=1</annotation></semantics></math>, while replacing it with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>2</mn><mi>x</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">-2x+1</annotation></semantics></math> gives <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mi>−</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">r=-1</annotation></semantics></math>.</p>
+<p>绝对值接近 1 表示更贴近一条直线，但“多大算强”取决于性状、用途和数据条件，没有跨情境统一门槛。<br>
+Magnitudes closer to 1 indicate a closer straight-line fit, but what counts as strong depends on traits, purpose, and data conditions rather than a universal cutoff.</p>
+<p>零相关不能排除曲线关系，例如 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>u</mi><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>2</mn><mo>,</mo><mi>−</mi><mn>1</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">u=[-2,-1,0,1,2]</annotation></semantics></math> 与 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo>=</mo><msup><mi>u</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">v=u^2</annotation></semantics></math>。<br>
+Zero correlation does not exclude a curved relationship, as shown by <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>u</mi><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>2</mn><mo>,</mo><mi>−</mi><mn>1</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">u=[-2,-1,0,1,2]</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo>=</mo><msup><mi>u</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">v=u^2</annotation></semantics></math>.</p>
+<p>这个反例中 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>u</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\bar{u}=0</annotation></semantics></math>、<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>v</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">\bar{v}=2</annotation></semantics></math>，交叉乘积和为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>4</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>0</mn><mo>−</mo><mn>1</mn><mo>+</mo><mn>4</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">-4+1+0-1+4=0</annotation></semantics></math>，所以 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">r=0</annotation></semantics></math>。<br>
+In this example, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>u</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\bar{u}=0</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>v</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">\bar{v}=2</annotation></semantics></math>, giving cross-product sum <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>4</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>0</mn><mo>−</mo><mn>1</mn><mo>+</mo><mn>4</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">-4+1+0-1+4=0</annotation></semantics></math> and therefore <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">r=0</annotation></semantics></math>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/03-2-zero-correlation-quadratic.png" class="img-fluid figure-img"></p>
+<figcaption>零皮尔逊相关的二次曲线反例 / Quadratic example with zero Pearson correlation</figcaption>
+</figure>
+</div>
+<p><strong>图 03-2A</strong>　五个点沿 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo>=</mo><msup><mi>u</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">v=u^2</annotation></semantics></math> 分布，左右对称的离差乘积抵消，因此这组点的皮尔逊相关为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">r=0</annotation></semantics></math>。<br>
+<strong>Figure 03-2A</strong>　The five points follow <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo>=</mo><msup><mi>u</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">v=u^2</annotation></semantics></math>, and the centered cross-products cancel by symmetry, giving Pearson correlation <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">r=0</annotation></semantics></math>.</p>
+<p>两个变量独立且二阶矩存在时协方差为 0，但反过来“协方差为 0 就独立”一般不成立。<br>
+Independence implies zero covariance when second moments exist, but zero covariance does not generally imply independence.</p>
+<p>任何一列都相同时，其平方偏离和为 0，分母变成 0，因此结果应标为未定义。<br>
+If either column is constant, its squared-deviation sum is zero and the denominator vanishes, so the result should be marked undefined.</p>
+</section>
+<section id="相关与回归为什么不同-why-correlation-and-regression-differ" class="level2">
+<h2 class="anchored" data-anchor-id="相关与回归为什么不同-why-correlation-and-regression-differ">05 · 相关与回归为什么不同 / Why correlation and regression differ</h2>
+<p>相关交换 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> 与 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> 后不变，而回归必须指定哪个变量用于预测哪个结果。<br>
+Correlation is unchanged when <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> are swapped, whereas regression specifies which variable predicts which outcome.</p>
+<p>拟合采食量对日增重的直线时，斜率为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>b</mi><mrow><mi>y</mi><mo stretchy="false" form="prefix">|</mo><mi>x</mi></mrow></msub><mo>=</mo><mn>100</mn><mi>/</mi><mn>20</mn><mo>,</mo><mn>000</mn><mo>=</mo><mn>0.005</mn></mrow><annotation encoding="application/x-tex">b_{y|x}=100/20{,}000=0.005</annotation></semantics></math>。<br>
+Fitting intake from gain gives slope <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>b</mi><mrow><mi>y</mi><mo stretchy="false" form="prefix">|</mo><mi>x</mi></mrow></msub><mo>=</mo><mn>100</mn><mi>/</mi><mn>20</mn><mo>,</mo><mn>000</mn><mo>=</mo><mn>0.005</mn></mrow><annotation encoding="application/x-tex">b_{y|x}=100/20{,}000=0.005</annotation></semantics></math>.</p>
+<p>反过来拟合日增重对采食量时，斜率为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>b</mi><mrow><mi>x</mi><mo stretchy="false" form="prefix">|</mo><mi>y</mi></mrow></msub><mo>=</mo><mn>100</mn><mi>/</mi><mn>2</mn><mo>=</mo><mn>50</mn></mrow><annotation encoding="application/x-tex">b_{x|y}=100/2=50</annotation></semantics></math>，并不是 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.005</mn><annotation encoding="application/x-tex">0.005</annotation></semantics></math> 的倒数 200。<br>
+Reversing the regression to fit gain from intake gives <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>b</mi><mrow><mi>x</mi><mo stretchy="false" form="prefix">|</mo><mi>y</mi></mrow></msub><mo>=</mo><mn>100</mn><mi>/</mi><mn>2</mn><mo>=</mo><mn>50</mn></mrow><annotation encoding="application/x-tex">b_{x|y}=100/2=50</annotation></semantics></math>, not the reciprocal of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.005</mn><annotation encoding="application/x-tex">0.005</annotation></semantics></math>, which is 200.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>y</mi><mo accent="true">̂</mo></mover><mo>=</mo><mi>−</mi><mn>1</mn><mo>+</mo><mn>0.005</mn><mi>x</mi><mo>,</mo><mspace width="2.0em"></mspace><mover><mi>x</mi><mo accent="true">̂</mo></mover><mo>=</mo><mn>650</mn><mo>+</mo><mn>50</mn><mi>y</mi></mrow><annotation encoding="application/x-tex">
+\hat{y}=-1+0.005x,\qquad
+\hat{x}=650+50y
+</annotation></semantics></math></p>
+<p>原因是两次拟合分别最小化不同方向的残差，普通最小二乘不会自动把两列都当作无误差的因果量。<br>
+The fits minimize residuals in different directions, and ordinary least squares does not automatically treat both columns as error-free causal quantities.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/03-2-regression-directions.png" class="img-fluid figure-img"></p>
+<figcaption>交换预测方向时的两条回归式 / Two regression equations for reversed prediction</figcaption>
+</figure>
+</div>
+<p><strong>图 03-2B</strong>　同一组四头猪的数据在交换变量后仍有 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">r=0.5</annotation></semantics></math>，两次普通最小二乘拟合分别最小化采食量方向与日增重方向的残差平方和。<br>
+<strong>Figure 03-2B</strong>　The same four pigs give <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">r=0.5</annotation></semantics></math> in either order, while the two ordinary least-squares fits minimize the sum of squared residuals along feed intake and daily gain, respectively.</p>
+</section>
+<section id="r-平方到底表示什么-what-does-r-squared-mean" class="level2">
+<h2 class="anchored" data-anchor-id="r-平方到底表示什么-what-does-r-squared-mean">06 · r 平方到底表示什么 / What does r squared mean?</h2>
+<p><strong>总平方和 SST</strong>是结果 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> 相对自身均值的平方偏离，本例为 2。<br>
+The <strong>total sum of squares (SST)</strong> measures squared deviations of outcome <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> from its own mean and equals 2 here.</p>
+<p><strong>残差平方和 SSE</strong>是 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> 相对拟合值的平方偏离，本例为 1.5。<br>
+The <strong>residual sum of squares (SSE)</strong> measures squared deviations of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> from fitted values and equals 1.5 here.</p>
+<p><strong>决定系数 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math></strong>在这里衡量加入直线预测后，相对只用均值预测减少了多少比例的平方偏离。<br>
+The <strong>coefficient of determination <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math></strong> here measures the proportional reduction in squared deviation from fitting the line rather than predicting only the mean.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>=</mo><mn>1</mn><mo>−</mo><mfrac><mrow><mi>S</mi><mi>S</mi><mi>E</mi></mrow><mrow><mi>S</mi><mi>S</mi><mi>T</mi></mrow></mfrac><mo>=</mo><mn>1</mn><mo>−</mo><mfrac><mn>1.5</mn><mn>2</mn></mfrac><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">
+R^2=1-\frac{SSE}{SST}=1-\frac{1.5}{2}=0.25
+</annotation></semantics></math></p>
+<p>在使用同一批数据、一个解释变量、含截距的普通最小二乘回归中，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>=</mo><msup><mi>r</mi><mn>2</mn></msup><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">R^2=r^2=0.25</annotation></semantics></math>。<br>
+For ordinary least squares on the same data with one predictor and an intercept, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>=</mo><msup><mi>r</mi><mn>2</mn></msup><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">R^2=r^2=0.25</annotation></semantics></math>.</p>
+<p>这表示本次样本内平方偏离减少了 25%，不表示发现了 25% 的生物学原因或 25% 的遗传力。<br>
+This means a 25% reduction in within-sample squared deviation, not discovery of 25% of biological causes or 25% heritability.</p>
+<p>换成无截距回归、多变量模型或新样本预测时，不能直接照搬这个等式与解释。<br>
+This equality and interpretation cannot simply be carried over to regression without an intercept, multiple predictors, or prediction on new data.</p>
+</section>
+<section id="显著性和-p-值-significance-and-p-values" class="level2">
+<h2 class="anchored" data-anchor-id="显著性和-p-值-significance-and-p-values">07 · 显著性和 p 值 / Significance and p-values</h2>
+<p>样本相关 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math> 是当前数据的统计量，总体相关 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math> 是想了解的未知参数。<br>
+Sample correlation <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math> is a statistic of the current data, whereas population correlation <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math> is the unknown parameter of interest.</p>
+<p><strong>零假设 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mn>0</mn></msub><annotation encoding="application/x-tex">H_0</annotation></semantics></math></strong>是检验暂时作为基准的命题，这里设为总体线性相关 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\rho=0</annotation></semantics></math>。<br>
+A <strong>null hypothesis <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mn>0</mn></msub><annotation encoding="application/x-tex">H_0</annotation></semantics></math></strong> is the proposition used as a test benchmark, here population linear correlation <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\rho=0</annotation></semantics></math>.</p>
+<p><strong>p 值</strong>是在零假设及检验条件成立时，得到至少与当前一样极端的检验统计量的概率。<br>
+A <strong>p-value</strong> is the probability of a test statistic at least as extreme as observed, assuming the null hypothesis and test conditions hold.</p>
+<p>为演示经典双侧检验，额外假设各猪的数据对独立且来自同一二元正态分布。<br>
+To illustrate the classical two-sided test, additionally assume independent pig pairs from the same bivariate normal distribution.</p>
+<p><strong>二元正态</strong>描述两个变量联合的特定正态分布条件，不能只看两列各自像钟形就认定成立。<br>
+<strong>Bivariate normality</strong> is a specific joint normal condition and is not established merely because each column looks bell-shaped.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mi>r</mi><msqrt><mfrac><mrow><mi>n</mi><mo>−</mo><mn>2</mn></mrow><mrow><mn>1</mn><mo>−</mo><msup><mi>r</mi><mn>2</mn></msup></mrow></mfrac></msqrt><mo>=</mo><mn>0.5</mn><msqrt><mfrac><mn>2</mn><mn>0.75</mn></mfrac></msqrt><mo>≈</mo><mn>0.816497</mn><mo>,</mo><mspace width="2.0em"></mspace><mi>d</mi><mi>f</mi><mo>=</mo><mi>n</mi><mo>−</mo><mn>2</mn><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">
+t=r\sqrt{\frac{n-2}{1-r^2}}
+=0.5\sqrt{\frac{2}{0.75}}
+\approx0.816497,\qquad df=n-2=2
+</annotation></semantics></math></p>
+<p>这里 <strong>df</strong> 是自由度缩写，使用自由度为 2 的 t 分布得到双侧 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">p=0.5</annotation></semantics></math>。<br>
+Here <strong>df</strong> abbreviates degrees of freedom, and a t distribution with two degrees of freedom gives two-sided <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">p=0.5</annotation></semantics></math>.</p>
+<p>这个特例可用正数 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math> 下的尾概率公式 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>1</mn><mo>−</mo><mi>t</mi><mi>/</mi><msqrt><mrow><msup><mi>t</mi><mn>2</mn></msup><mo>+</mo><mn>2</mn></mrow></msqrt></mrow><annotation encoding="application/x-tex">p=1-t/\sqrt{t^2+2}</annotation></semantics></math> 直接验证，无需另查统计表。<br>
+This special case can be verified directly for positive <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math> using <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>1</mn><mo>−</mo><mi>t</mi><mi>/</mi><msqrt><mrow><msup><mi>t</mi><mn>2</mn></msup><mo>+</mo><mn>2</mn></mrow></msqrt></mrow><annotation encoding="application/x-tex">p=1-t/\sqrt{t^2+2}</annotation></semantics></math> without consulting a statistical table.</p>
+<p>NIST 原页使用等价的 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><msup><mi>t</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">F=t^2</annotation></semantics></math> 检验，分子自由度为 1、分母自由度为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>−</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">n-2</annotation></semantics></math>。<br>
+The NIST page uses the equivalent <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><msup><mi>t</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">F=t^2</annotation></semantics></math> test with numerator degrees of freedom 1 and denominator degrees of freedom <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>−</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">n-2</annotation></semantics></math>.</p>
+<p><strong>统计显著</strong>通常指 p 值小于事先选定的显著性水平，后者是在零假设成立时控制错误拒绝概率的检验规则。<br>
+<strong>Statistical significance</strong> usually means a p-value below a prespecified significance level, a test rule controlling the chance of falsely rejecting a true null hypothesis.</p>
+<p>显著性水平 0.05 不是当前结论有 5% 概率出错，也不保证效应具有生产价值。<br>
+A significance level of 0.05 does not mean the current conclusion has a 5% probability of being wrong or guarantee a practically valuable effect.</p>
+<p>若事先采用 0.05 的阈值，本例不能拒绝零相关假设，但这不证明总体相关一定为 0。<br>
+With a prespecified threshold of 0.05, this example does not reject zero correlation, but that does not prove the population correlation is zero.</p>
+<p>p 值不是“零假设为真的概率”，也不是效应大小，更不是育种价值大小。<br>
+A p-value is not the probability that the null hypothesis is true, an effect size, or a measure of breeding merit.</p>
+<p>四个自拟点只用于演示算法，不构成任何猪群关系的实证证据。<br>
+These four invented points only demonstrate the calculation and provide no empirical evidence about a pig population.</p>
+</section>
+<section id="回到育种三个常见误读-three-common-breeding-misinterpretations" class="level2">
+<h2 class="anchored" data-anchor-id="回到育种三个常见误读-three-common-breeding-misinterpretations">08 · 回到育种：三个常见误读 / Three common breeding misinterpretations</h2>
+<ul>
+<li><p><strong>共同环境被当作遗传关系</strong>：同一饲料同时改变采食量和日增重，也能产生表型相关。<br>
+<strong>Shared environment mistaken for genetics:</strong> feed affecting both intake and gain can create phenotypic correlation.</p></li>
+<li><p><strong>动物亲缘被当作性状相关</strong>：同胞亲缘讨论动物之间的关系，本篇相关讨论性状之间的变化。<br>
+<strong>Animal relatedness mistaken for trait correlation:</strong> sibling relatedness concerns animals, while this correlation concerns variation between traits.</p></li>
+<li><p><strong>筛选后的相关被当作全群相关</strong>：只保留高增重猪会改变数据范围，计算结果未必代表筛选前总体。<br>
+<strong>Selected-sample correlation mistaken for whole-population correlation:</strong> retaining only high-gain pigs changes the data range and may change what the result represents.</p></li>
+</ul>
+<p>相关也可能受到极端值、测量误差和群体混合影响，所以应先看原始配对与分组再解释单个系数。<br>
+Correlation can also be affected by extremes, measurement error, and mixed groups, so inspect original pairs and groups before interpreting one coefficient.</p>
+</section>
+<section id="用单位和样本量读-r斜率和-p-值-reading-r-slope-and-p-with-units-and-sample-size" class="level2">
+<h2 class="anchored" data-anchor-id="用单位和样本量读-r斜率和-p-值-reading-r-slope-and-p-with-units-and-sample-size">09 · 用单位和样本量读 r、斜率和 p 值 / Reading r, Slope, and p with Units and Sample Size</h2>
+<p>把所有采食量乘以 1000 后，相关仍是 0.5，采食量对日增重的回归斜率由 0.005 变为 5，斜率随响应量单位而变。<br>
+Multiplying all intake values by 1,000 leaves correlation at 0.5 and changes the intake-on-gain slope from 0.005 to 5 because the slope follows the response unit.</p>
+<p>同一小样本可以同时给出 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">r=0.5</annotation></semantics></math> 和 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">p=0.5</annotation></semantics></math>，前者描述样本线性关系，后者还取决于样本量和检验假设。<br>
+The same small sample can give both <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">r=0.5</annotation></semantics></math>, a description of sample linear association, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">p=0.5</annotation></semantics></math>, which also depends on sample size and test assumptions.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"可滚动的代码","output":"可滚动的输出"};
+  </script>
+<nav class="page-navigation" aria-label="页面">
+  <div class="nav-page nav-page-previous">
+      <a href="./chapter-03-1.html" class="pagination-link" aria-label="均值向量与协方差矩阵详读 / Mean vectors and covariance matrices">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">均值向量与协方差矩阵详读 / Mean vectors and covariance matrices</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./chapter-03-3.html" class="pagination-link" aria-label="均值方差标准差与数值校验详读 / Mean, variance, standard deviation, and numerical checks">
+        <span class="nav-page-text">均值方差标准差与数值校验详读 / Mean, variance, standard deviation, and numerical checks</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

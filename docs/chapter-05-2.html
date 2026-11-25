@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>05-2｜亲缘、共祖与近交计算 / Relationship, kinship, and inbreeding calculations – 我用做软件的方式学育种</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./chapter-05-3.html" rel="next">
+<link href="./chapter-05-1.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6774357434628ad73da102cd638e03af.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="sample.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">跳至主要内容</a>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="网站">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">我用做软件的方式学育种</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="展开或折叠导航栏" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./contents.html" aria-current="page"> 
+<span class="menu-text">全书目录</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="搜索"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="工具栏">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="路径"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-01-0.html">第一篇 · 基础 / Part I · Foundations</a></li><li class="breadcrumb-item"><a href="./chapter-05-0.html">05 · 家系、系谱与近交 / Families, pedigrees, and inbreeding</a></li><li class="breadcrumb-item"><a href="./chapter-05-2.html">亲缘、共祖与近交计算 / Relationship, kinship, and inbreeding calculations</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto" aria-label="区域">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">前言</span> <span class="course-nav-en" lang="en">Preface</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./contents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">00 · 目录</span> <span class="course-nav-en" lang="en">Contents</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><span class="course-nav-zh" lang="zh">第一篇 · 基础</span> <span class="course-nav-en" lang="en">Part I · Foundations</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-01-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><span class="course-nav-zh" lang="zh">01 · 育种与遗传基础</span> <span class="course-nav-en" lang="en">Breeding and inheritance</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false" aria-label="展开或折叠此栏: 01 · 育种与遗传基础 / Breeding and inheritance">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-01-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">数量遗传学与遗传作用</span> <span class="course-nav-en" lang="en">Quantitative genetics and genetic effects</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-01-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传改良与杂交体系</span> <span class="course-nav-en" lang="en">Genetic improvement and crossbreeding systems</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-02-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><span class="course-nav-zh" lang="zh">02 · 性状与类型</span> <span class="course-nav-en" lang="en">Traits and their types</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false" aria-label="展开或折叠此栏: 02 · 性状与类型 / Traits and their types">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">猪性状、EBV 与后代差异</span> <span class="course-nav-en" lang="en">Pig traits, EBVs, and progeny differences</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">阈值模型与分类性状</span> <span class="course-nav-en" lang="en">Threshold models and categorical traits</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">重复记录与永久环境</span> <span class="course-nav-en" lang="en">Repeated records and permanent environment</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-03-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><span class="course-nav-zh" lang="zh">03 · 统计基础：从一行数据到一个结论</span> <span class="course-nav-en" lang="en">Statistics: from a data row to a conclusion</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="false" aria-label="展开或折叠此栏: 03 · 统计基础：从一行数据到一个结论 / Statistics: from a data row to a conclusion">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">均值向量与协方差矩阵详读</span> <span class="course-nav-en" lang="en">Mean vectors and covariance matrices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">相关系数与回归辨析详读</span> <span class="course-nav-en" lang="en">Correlation versus regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">均值方差标准差与数值校验详读</span> <span class="course-nav-en" lang="en">Mean, variance, standard deviation, and numerical checks</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-04-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><span class="course-nav-zh" lang="zh">04 · 遗传参数与相关性</span> <span class="course-nav-en" lang="en">Genetic parameters and correlations</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="false" aria-label="展开或折叠此栏: 04 · 遗传参数与相关性 / Genetic parameters and correlations">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-04-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传力与遗传参数</span> <span class="course-nav-en" lang="en">Heritability and genetic parameters</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-04-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传相关与环境互作</span> <span class="course-nav-en" lang="en">Genetic correlation and environmental interaction</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-05-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-6-label"><span class="course-nav-zh" lang="zh">05 · 家系、系谱与近交</span> <span class="course-nav-en" lang="en">Families, pedigrees, and inbreeding</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="true" aria-label="展开或折叠此栏: 05 · 家系、系谱与近交 / Families, pedigrees, and inbreeding">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">家系、同胞与系谱术语</span> <span class="course-nav-en" lang="en">Families, siblings, and pedigree terms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-2.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">亲缘、共祖与近交计算</span> <span class="course-nav-en" lang="en">Relationship, kinship, and inbreeding calculations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">动物模型与系谱信息</span> <span class="course-nav-en" lang="en">Animal models and pedigree information</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label"><span class="course-nav-zh" lang="zh">第二篇 · 遗传评估</span> <span class="course-nav-en" lang="en">Part II · Genetic Evaluation</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-06-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-8-label"><span class="course-nav-zh" lang="zh">06 · 育种值与准确度</span> <span class="course-nav-en" lang="en">Breeding values and accuracy</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="false" aria-label="展开或折叠此栏: 06 · 育种值与准确度 / Breeding values and accuracy">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-06-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">准确度与估计风险</span> <span class="course-nav-en" lang="en">Accuracy and estimation risk</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-06-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">PEV、可靠性与输出字段</span> <span class="course-nav-en" lang="en">PEV, reliability, and output fields</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-07-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-9-label"><span class="course-nav-zh" lang="zh">07 · 育种值计算与 BLUP</span> <span class="course-nav-en" lang="en">Breeding-value Calculation and BLUP</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="false" aria-label="展开或折叠此栏: 07 · 育种值计算与 BLUP / Breeding-value Calculation and BLUP">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">混合模型方程逐步推导</span> <span class="course-nav-en" lang="en">Mixed model equations step by step</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">REML 与方差组分</span> <span class="course-nav-en" lang="en">REML and variance components</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">多性状评估与信息借用</span> <span class="course-nav-en" lang="en">Multi-trait evaluation and information borrowing</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-08-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-10-label"><span class="course-nav-zh" lang="zh">08 · 基因组与三类 BLUP</span> <span class="course-nav-en" lang="en">Genomics and three BLUP approaches</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-controls="quarto-sidebar-section-10" aria-expanded="false" aria-label="展开或折叠此栏: 08 · 基因组与三类 BLUP / Genomics and three BLUP approaches">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-10" aria-labelledby="quarto-sidebar-section-10-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">单步关系矩阵 H</span> <span class="course-nav-en" lang="en">The single-step relationship matrix H</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">基因组质控与样本身份</span> <span class="course-nav-en" lang="en">Genomic quality control and sample identity</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">参考群体与基因组选择</span> <span class="course-nav-en" lang="en">Reference populations and genomic selection</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-controls="quarto-sidebar-section-11" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-11-label"><span class="course-nav-zh" lang="zh">第三篇 · 育种决策</span> <span class="course-nav-en" lang="en">Part III · Breeding Decisions</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-11" aria-labelledby="quarto-sidebar-section-11-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-09-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-12-label"><span class="course-nav-zh" lang="zh">09 · 选择、选配与遗传进展</span> <span class="course-nav-en" lang="en">Selection, mating, and genetic progress</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-controls="quarto-sidebar-section-12" aria-expanded="false" aria-label="展开或折叠此栏: 09 · 选择、选配与遗传进展 / Selection, mating, and genetic progress">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-12" aria-labelledby="quarto-sidebar-section-12-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">多性状选择：先定目标，再分配选择压力</span> <span class="course-nav-en" lang="en">Multi-trait selection: objectives and emphasis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">综合选择指数：一个分数如何连接多个 EBV</span> <span class="course-nav-en" lang="en">Selection indexes: connecting multiple EBVs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">同期群：先确认谁有资格直接比较</span> <span class="course-nav-en" lang="en">Contemporary groups: who can be directly compared?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传联系：让不同组之间有一座桥</span> <span class="course-nav-en" lang="en">Connectedness: a bridge between groups</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">选择反应：每代改良与每年改良</span> <span class="course-nav-en" lang="en">Selection response: per generation versus per year</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-controls="quarto-sidebar-section-13" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-13-label"><span class="course-nav-zh" lang="zh">附录</span> <span class="course-nav-en" lang="en">Appendices</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-13" aria-labelledby="quarto-sidebar-section-13-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-11-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">附录 A · 中英术语速查</span> <span class="course-nav-en" lang="en">Appendix A · Bilingual Glossary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-12-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">附录 B · 资料来源</span> <span class="course-nav-en" lang="en">Appendix B · Sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">本页目录</h2>
+   
+  <ul>
+  <li><a href="#来源要点与系数口径-source-points-and-coefficient-conventions" id="toc-来源要点与系数口径-source-points-and-coefficient-conventions" class="nav-link active" data-scroll-target="#来源要点与系数口径-source-points-and-coefficient-conventions">01 · 来源要点与系数口径 / Source points and coefficient conventions</a></li>
+  <li><a href="#三个量分别描述什么-what-do-the-three-quantities-describe" id="toc-三个量分别描述什么-what-do-the-three-quantities-describe" class="nav-link" data-scroll-target="#三个量分别描述什么-what-do-the-three-quantities-describe">02 · 三个量分别描述什么 / What do the three quantities describe?</a></li>
+  <li><a href="#先构建一个小-a-矩阵-build-a-small-a-matrix" id="toc-先构建一个小-a-矩阵-build-a-small-a-matrix" class="nav-link" data-scroll-target="#先构建一个小-a-矩阵-build-a-small-a-matrix">03 · 先构建一个小 A 矩阵 / Build a small A matrix</a></li>
+  <li><a href="#由父母关系计算子代-f-calculate-offspring-f" id="toc-由父母关系计算子代-f-calculate-offspring-f" class="nav-link" data-scroll-target="#由父母关系计算子代-f-calculate-offspring-f">04 · 由父母关系计算子代 F / Calculate offspring F</a></li>
+  <li><a href="#标准化关系-r-为什么有时不等于-a-why-normalized-r-can-differ-from-a" id="toc-标准化关系-r-为什么有时不等于-a-why-normalized-r-can-differ-from-a" class="nav-link" data-scroll-target="#标准化关系-r-为什么有时不等于-a-why-normalized-r-can-differ-from-a">05 · 标准化关系 R 为什么有时不等于 A / Why normalized R can differ from A</a></li>
+  <li><a href="#f-不是疾病概率-f-is-not-a-disease-probability" id="toc-f-不是疾病概率-f-is-not-a-disease-probability" class="nav-link" data-scroll-target="#f-不是疾病概率-f-is-not-a-disease-probability">06 · F 不是疾病概率 / F is not a disease probability</a></li>
+  <li><a href="#报表只写亲缘-0.25-时先认尺度-identify-the-scale-of-a-reported-relationship-of-0.25" id="toc-报表只写亲缘-0.25-时先认尺度-identify-the-scale-of-a-reported-relationship-of-0.25" class="nav-link" data-scroll-target="#报表只写亲缘-0.25-时先认尺度-identify-the-scale-of-a-reported-relationship-of-0.25">07 · 报表只写亲缘 0.25 时，先认尺度 / Identify the Scale of a Reported Relationship of 0.25</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="路径"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-01-0.html">第一篇 · 基础 / Part I · Foundations</a></li><li class="breadcrumb-item"><a href="./chapter-05-0.html">05 · 家系、系谱与近交 / Families, pedigrees, and inbreeding</a></li><li class="breadcrumb-item"><a href="./chapter-05-2.html">亲缘、共祖与近交计算 / Relationship, kinship, and inbreeding calculations</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">05-2｜亲缘、共祖与近交计算 / Relationship, kinship, and inbreeding calculations</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><a href="./contents.html">目录 / Contents</a> · <a href="./chapter-05-0.html">返回主文 / Main chapter</a></p>
+<p>我把 A 元素、共祖和近交系数放在一张对照表里，代入同一个系谱之前先写明是在比两头动物，还是在算一头后代。<br>
+I keep A entries, kinship, and inbreeding in one reference table and identify whether a calculation compares two animals or describes one offspring before using the same pedigree.</p>
+<p>原始来源是 <a href="https://extension.missouri.edu/publications/g2911">MU Extension：Inbreeding: Its Meaning, Uses and Effects on Farm Animals</a>，下面区分其标准化关系系数与动物模型常用 A 元素。<br>
+The original source is <a href="https://extension.missouri.edu/publications/g2911">MU Extension: Inbreeding: Its Meaning, Uses and Effects on Farm Animals</a>, with its normalized relationship distinguished below from animal-model A entries.</p>
+<p>本篇于 <strong>2026-10-18</strong> 核对来源，来源要点采用概括，教学数据与演算均为自拟。<br>
+Sources were checked on <strong>2026-10-18</strong>, source points are summarized, and teaching data and calculations are original.</p>
+<blockquote class="blockquote">
+<p><strong>我想弄懂的事｜父母关系为 0.5，为什么子代近交系数是 0.25？</strong><br>
+<strong>What I want to understand | Why does a parental relationship of 0.5 give offspring inbreeding of 0.25?</strong></p>
+</blockquote>
+<section id="来源要点与系数口径-source-points-and-coefficient-conventions" class="level2">
+<h2 class="anchored" data-anchor-id="来源要点与系数口径-source-points-and-coefficient-conventions">01 · 来源要点与系数口径 / Source points and coefficient conventions</h2>
+<p>原文以共同祖先路径解释亲缘和近交，并指出后果随物种、性状和群体而变。<br>
+The source uses common-ancestor paths to explain relationship and inbreeding and notes that consequences vary by species, trait, and population.</p>
+<p>其关系公式包含个体近交程度的标准化项，所以在近交动物间不能一概把原文 R 写成 A。<br>
+Its relationship formula includes normalization for individual inbreeding, so its R must not universally be equated with A for inbred animals.</p>
+</section>
+<section id="三个量分别描述什么-what-do-the-three-quantities-describe" class="level2">
+<h2 class="anchored" data-anchor-id="三个量分别描述什么-what-do-the-three-quantities-describe">02 · 三个量分别描述什么 / What do the three quantities describe?</h2>
+<ul>
+<li><p><strong>A 元素 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">A_{ij}</annotation></semantics></math></strong>描述动物 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow><annotation encoding="application/x-tex">i,j</annotation></semantics></math> 相对基准的加性遗传协方差比例。<br>
+<strong>An A entry <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">A_{ij}</annotation></semantics></math></strong> describes the additive genetic covariance between animals <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow><annotation encoding="application/x-tex">i,j</annotation></semantics></math> relative to the base variance.</p></li>
+<li><p><strong>共祖系数 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ϕ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">\phi_{ij}</annotation></semantics></math></strong>是从两头动物各随机取一个常染色体等位基因拷贝，两者同祖同源的概率。<br>
+<strong>Kinship <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ϕ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">\phi_{ij}</annotation></semantics></math></strong> is the probability that autosomal allele copies sampled one from each animal are identical by descent.</p></li>
+<li><p><strong>个体近交系数 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>F</mi><mi>k</mi></msub><annotation encoding="application/x-tex">F_k</annotation></semantics></math></strong>描述同一个体两个对应拷贝同祖同源的概率。<br>
+<strong>Individual inbreeding <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>F</mi><mi>k</mi></msub><annotation encoding="application/x-tex">F_k</annotation></semantics></math></strong> describes the probability that the corresponding two copies within one animal are identical by descent.</p></li>
+</ul>
+<p>在相同基准和标准系谱定义下，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>2</mn><msub><mi>ϕ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">A_{ij}=2\phi_{ij}</annotation></semantics></math>，而子代 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>F</mi><annotation encoding="application/x-tex">F</annotation></semantics></math> 等于父母共祖。<br>
+Under the same base and standard pedigree definitions, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>2</mn><msub><mi>ϕ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">A_{ij}=2\phi_{ij}</annotation></semantics></math> and offspring <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>F</mi><annotation encoding="application/x-tex">F</annotation></semantics></math> equals parental kinship.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mi>C</mi></msub><mo>=</mo><msub><mi>ϕ</mi><mrow><mi>S</mi><mo>,</mo><mi>D</mi></mrow></msub><mo>=</mo><mfrac><msub><mi>A</mi><mrow><mi>S</mi><mo>,</mo><mi>D</mi></mrow></msub><mn>2</mn></mfrac><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>A</mi><mrow><mi>C</mi><mi>C</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>+</mo><msub><mi>F</mi><mi>C</mi></msub></mrow><annotation encoding="application/x-tex">
+F_C=\phi_{S,D}=\frac{A_{S,D}}{2},\qquad A_{CC}=1+F_C
+</annotation></semantics></math></p>
+</section>
+<section id="先构建一个小-a-矩阵-build-a-small-a-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="先构建一个小-a-矩阵-build-a-small-a-matrix">03 · 先构建一个小 A 矩阵 / Build a small A matrix</h2>
+<p>假设基础动物 S、D 互不相关且不近交，C1、C2 都是它们的子代。<br>
+Assume founders S and D are unrelated and non-inbred, and C1 and C2 are offspring of both.</p>
+<p>对父母先于后代排序的系谱，后代与较早动物 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math> 的关系可递推为父母关系的平均。<br>
+With parents ordered before offspring, an offspring’s relationship to an earlier animal <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math> is recursively the average parental relationship.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mstyle displaystyle="false"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mo stretchy="false" form="prefix">(</mo><msub><mi>A</mi><mrow><msub><mi>s</mi><mi>i</mi></msub><mo>,</mo><mi>j</mi></mrow></msub><mo>+</mo><msub><mi>A</mi><mrow><msub><mi>d</mi><mi>i</mi></msub><mo>,</mo><mi>j</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>A</mi><mrow><mi>i</mi><mi>i</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>+</mo><mstyle displaystyle="false"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><msub><mi>A</mi><mrow><msub><mi>s</mi><mi>i</mi></msub><mo>,</mo><msub><mi>d</mi><mi>i</mi></msub></mrow></msub></mrow><annotation encoding="application/x-tex">
+A_{ij}=\tfrac12(A_{s_i,j}+A_{d_i,j}),\qquad
+A_{ii}=1+\tfrac12 A_{s_i,d_i}
+</annotation></semantics></math></p>
+<p>先算 C1 与 S：<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>A</mi><mrow><mi>S</mi><mi>S</mi></mrow></msub><mo>+</mo><msub><mi>A</mi><mrow><mi>D</mi><mi>S</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">(A_{SS}+A_{DS})/2=(1+0)/2=0.5</annotation></semantics></math>。<br>
+First calculate C1 with S: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>A</mi><mrow><mi>S</mi><mi>S</mi></mrow></msub><mo>+</mo><msub><mi>A</mi><mrow><mi>D</mi><mi>S</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">(A_{SS}+A_{DS})/2=(1+0)/2=0.5</annotation></semantics></math>.</p>
+<p>再算 C2 与 C1：<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>A</mi><mrow><mi>S</mi><mo>,</mo><mi>C</mi><mn>1</mn></mrow></msub><mo>+</mo><msub><mi>A</mi><mrow><mi>D</mi><mo>,</mo><mi>C</mi><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>0.5</mn><mo>+</mo><mn>0.5</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">(A_{S,C1}+A_{D,C1})/2=(0.5+0.5)/2=0.5</annotation></semantics></math>。<br>
+Then calculate C2 with C1: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>A</mi><mrow><mi>S</mi><mo>,</mo><mi>C</mi><mn>1</mn></mrow></msub><mo>+</mo><msub><mi>A</mi><mrow><mi>D</mi><mo>,</mo><mi>C</mi><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>0.5</mn><mo>+</mo><mn>0.5</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">(A_{S,C1}+A_{D,C1})/2=(0.5+0.5)/2=0.5</annotation></semantics></math>.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>=</mo><msub><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mi>S</mi><mo>,</mo><mi>D</mi><mo>,</mo><mi>C</mi><mn>1</mn><mo>,</mo><mi>C</mi><mn>2</mn></mrow></msub></mrow><annotation encoding="application/x-tex">
+A=\begin{bmatrix}
+1&amp;0&amp;0.5&amp;0.5\\
+0&amp;1&amp;0.5&amp;0.5\\
+0.5&amp;0.5&amp;1&amp;0.5\\
+0.5&amp;0.5&amp;0.5&amp;1
+\end{bmatrix}_{S,D,C1,C2}
+</annotation></semantics></math></p>
+<p>矩阵对角线为 1，是因为这四头在当前基础假设下都不近交，不是因为动物与自身“没有近交风险”。<br>
+The diagonal is 1 because these four animals are non-inbred under the stated base assumptions, not because self-relatedness means no inbreeding risk.</p>
+</section>
+<section id="由父母关系计算子代-f-calculate-offspring-f" class="level2">
+<h2 class="anchored" data-anchor-id="由父母关系计算子代-f-calculate-offspring-f">04 · 由父母关系计算子代 F / Calculate offspring F</h2>
+<p>若把全同胞 C1、C2 作为一对假设父母，它们子代的 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mn>0.5</mn><mi>/</mi><mn>2</mn><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">F=0.5/2=0.25</annotation></semantics></math>。<br>
+If full siblings C1 and C2 are hypothetical parents, their offspring has <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mn>0.5</mn><mi>/</mi><mn>2</mn><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">F=0.5/2=0.25</annotation></semantics></math>.</p>
+<p>这个子代的对角元为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>+</mo><mn>0.25</mn><mo>=</mo><mn>1.25</mn></mrow><annotation encoding="application/x-tex">1+0.25=1.25</annotation></semantics></math>，而不是 0.25。<br>
+That offspring’s diagonal entry is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>+</mo><mn>0.25</mn><mo>=</mo><mn>1.25</mn></mrow><annotation encoding="application/x-tex">1+0.25=1.25</annotation></semantics></math>, not 0.25.</p>
+<p>若父母是无其他背景亲缘的半同胞，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">A=0.25</annotation></semantics></math>，所以子代 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mn>0.125</mn></mrow><annotation encoding="application/x-tex">F=0.125</annotation></semantics></math>。<br>
+For half-sibling parents without additional background relationships, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">A=0.25</annotation></semantics></math> and offspring <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mn>0.125</mn></mrow><annotation encoding="application/x-tex">F=0.125</annotation></semantics></math>.</p>
+<p>这两例用于识别系数尺度，不构成推荐这种选配的建议。<br>
+These examples identify coefficient scales and do not recommend these matings.</p>
+</section>
+<section id="标准化关系-r-为什么有时不等于-a-why-normalized-r-can-differ-from-a" class="level2">
+<h2 class="anchored" data-anchor-id="标准化关系-r-为什么有时不等于-a-why-normalized-r-can-differ-from-a">05 · 标准化关系 R 为什么有时不等于 A / Why normalized R can differ from A</h2>
+<p>常见标准化加性关系定义为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mi>/</mi><msqrt><mrow><msub><mi>A</mi><mrow><mi>i</mi><mi>i</mi></mrow></msub><msub><mi>A</mi><mrow><mi>j</mi><mi>j</mi></mrow></msub></mrow></msqrt></mrow><annotation encoding="application/x-tex">R_{ij}=A_{ij}/\sqrt{A_{ii}A_{jj}}</annotation></semantics></math>。<br>
+A common normalized additive relationship is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mi>/</mi><msqrt><mrow><msub><mi>A</mi><mrow><mi>i</mi><mi>i</mi></mrow></msub><msub><mi>A</mi><mrow><mi>j</mi><mi>j</mi></mrow></msub></mrow></msqrt></mrow><annotation encoding="application/x-tex">R_{ij}=A_{ij}/\sqrt{A_{ii}A_{jj}}</annotation></semantics></math>.</p>
+<p>沿上例让 C1、C2 再产生两个全同胞 X、Y，则 X、Y 各有 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">F=0.25</annotation></semantics></math>，且 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>X</mi><mi>Y</mi></mrow></msub><mo>=</mo><mn>0.75</mn></mrow><annotation encoding="application/x-tex">A_{XY}=0.75</annotation></semantics></math>。<br>
+Continuing the example, let C1 and C2 produce full siblings X and Y, each with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">F=0.25</annotation></semantics></math> and with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>X</mi><mi>Y</mi></mrow></msub><mo>=</mo><mn>0.75</mn></mrow><annotation encoding="application/x-tex">A_{XY}=0.75</annotation></semantics></math>.</p>
+<p>这里 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>C</mi><mn>1</mn><mo>,</mo><mi>Y</mi></mrow></msub><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mn>0.5</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn><mo>=</mo><mn>0.75</mn></mrow><annotation encoding="application/x-tex">A_{C1,Y}=(1+0.5)/2=0.75</annotation></semantics></math>，另一亲本相同，所以再取父母平均仍为 0.75。<br>
+Here <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>C</mi><mn>1</mn><mo>,</mo><mi>Y</mi></mrow></msub><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mn>0.5</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn><mo>=</mo><mn>0.75</mn></mrow><annotation encoding="application/x-tex">A_{C1,Y}=(1+0.5)/2=0.75</annotation></semantics></math>, with the same relationship for the other parent, so averaging the parental values again gives 0.75.</p>
+<p>因此 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>X</mi><mi>Y</mi></mrow></msub><mo>=</mo><mn>0.75</mn><mi>/</mi><mn>1.25</mn><mo>=</mo><mn>0.6</mn></mrow><annotation encoding="application/x-tex">R_{XY}=0.75/1.25=0.6</annotation></semantics></math>，共祖为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.75</mn><mi>/</mi><mn>2</mn><mo>=</mo><mn>0.375</mn></mrow><annotation encoding="application/x-tex">0.75/2=0.375</annotation></semantics></math>，不能把标准化 R 再除以 2 得到子代近交。<br>
+Therefore <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mrow><mi>X</mi><mi>Y</mi></mrow></msub><mo>=</mo><mn>0.75</mn><mi>/</mi><mn>1.25</mn><mo>=</mo><mn>0.6</mn></mrow><annotation encoding="application/x-tex">R_{XY}=0.75/1.25=0.6</annotation></semantics></math> and kinship is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.75</mn><mi>/</mi><mn>2</mn><mo>=</mo><mn>0.375</mn></mrow><annotation encoding="application/x-tex">0.75/2=0.375</annotation></semantics></math>, so halving normalized R would not give offspring inbreeding.</p>
+</section>
+<section id="f-不是疾病概率-f-is-not-a-disease-probability" class="level2">
+<h2 class="anchored" data-anchor-id="f-不是疾病概率-f-is-not-a-disease-probability">06 · F 不是疾病概率 / F is not a disease probability</h2>
+<p><strong>同祖同源 IBD</strong>指来自同一祖先拷贝，区别于仅观察到两个字母相同。<br>
+<strong>Identity by descent (IBD)</strong> means descent from one ancestral copy, unlike merely observing matching allele labels.</p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">F=0.25</annotation></semantics></math> 不是有 25% 概率患病，也不表示 25% 的全部 DNA 序列相同。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">F=0.25</annotation></semantics></math> is neither a 25% disease probability nor a claim that 25% of the entire DNA sequence matches.</p>
+<p>近交会增加同祖纯合的机会，可能带来隐性有害变异表达和近交衰退，但具体损失需要群体与性状证据。<br>
+Inbreeding increases autozygosity and can expose harmful recessives and cause inbreeding depression, but specific losses require population- and trait-specific evidence.</p>
+</section>
+<section id="报表只写亲缘-0.25-时先认尺度-identify-the-scale-of-a-reported-relationship-of-0.25" class="level2">
+<h2 class="anchored" data-anchor-id="报表只写亲缘-0.25-时先认尺度-identify-the-scale-of-a-reported-relationship-of-0.25">07 · 报表只写亲缘 0.25 时，先认尺度 / Identify the Scale of a Reported Relationship of 0.25</h2>
+<p>报表只写「亲缘 0.25」时，我会先查它表示 A 元素、共祖系数、标准化关系还是基因组指标，也会查参考基准。<br>
+When a report gives only “relationship 0.25,” I look up whether it is an A entry, kinship, normalized relationship, or a genomic measure, as well as its reference base.</p>
+<p>在本例的标准系谱定义下，父母的 A 元素确认为 0.25 后，才能用 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.25</mn><mi>/</mi><mn>2</mn><mo>=</mo><mn>0.125</mn></mrow><annotation encoding="application/x-tex">0.25/2=0.125</annotation></semantics></math> 得到子代近交系数。<br>
+Under the standard pedigree definition used here, I use <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.25</mn><mi>/</mi><mn>2</mn><mo>=</mo><mn>0.125</mn></mrow><annotation encoding="application/x-tex">0.25/2=0.125</annotation></semantics></math> for offspring inbreeding only after confirming the parents’ A entry is 0.25.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"可滚动的代码","output":"可滚动的输出"};
+  </script>
+<nav class="page-navigation" aria-label="页面">
+  <div class="nav-page nav-page-previous">
+      <a href="./chapter-05-1.html" class="pagination-link" aria-label="家系、同胞与系谱术语 / Families, siblings, and pedigree terms">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">家系、同胞与系谱术语 / Families, siblings, and pedigree terms</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./chapter-05-3.html" class="pagination-link" aria-label="动物模型与系谱信息 / Animal models and pedigree information">
+        <span class="nav-page-text">动物模型与系谱信息 / Animal models and pedigree information</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

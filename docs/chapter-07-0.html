@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>07-0｜从手算到 BLUP / From hand calculations to BLUP – 我用做软件的方式学育种</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./chapter-07-2.html" rel="next">
+<link href="./chapter-06-3.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6774357434628ad73da102cd638e03af.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="sample.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">跳至主要内容</a>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="网站">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">我用做软件的方式学育种</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="展开或折叠导航栏" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./contents.html" aria-current="page"> 
+<span class="menu-text">全书目录</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="搜索"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="工具栏">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="路径"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-06-0.html">第二篇 · 遗传评估 / Part II · Genetic Evaluation</a></li><li class="breadcrumb-item"><a href="./chapter-07-0.html">07 · 育种值计算与 BLUP / Breeding-value Calculation and BLUP</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto" aria-label="区域">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">前言</span> <span class="course-nav-en" lang="en">Preface</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./contents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">00 · 目录</span> <span class="course-nav-en" lang="en">Contents</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><span class="course-nav-zh" lang="zh">第一篇 · 基础</span> <span class="course-nav-en" lang="en">Part I · Foundations</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-01-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><span class="course-nav-zh" lang="zh">01 · 育种与遗传基础</span> <span class="course-nav-en" lang="en">Breeding and inheritance</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false" aria-label="展开或折叠此栏: 01 · 育种与遗传基础 / Breeding and inheritance">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-01-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">数量遗传学与遗传作用</span> <span class="course-nav-en" lang="en">Quantitative genetics and genetic effects</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-01-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传改良与杂交体系</span> <span class="course-nav-en" lang="en">Genetic improvement and crossbreeding systems</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-02-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><span class="course-nav-zh" lang="zh">02 · 性状与类型</span> <span class="course-nav-en" lang="en">Traits and their types</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false" aria-label="展开或折叠此栏: 02 · 性状与类型 / Traits and their types">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">猪性状、EBV 与后代差异</span> <span class="course-nav-en" lang="en">Pig traits, EBVs, and progeny differences</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">阈值模型与分类性状</span> <span class="course-nav-en" lang="en">Threshold models and categorical traits</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">重复记录与永久环境</span> <span class="course-nav-en" lang="en">Repeated records and permanent environment</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-03-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><span class="course-nav-zh" lang="zh">03 · 统计基础：从一行数据到一个结论</span> <span class="course-nav-en" lang="en">Statistics: from a data row to a conclusion</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="false" aria-label="展开或折叠此栏: 03 · 统计基础：从一行数据到一个结论 / Statistics: from a data row to a conclusion">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">均值向量与协方差矩阵详读</span> <span class="course-nav-en" lang="en">Mean vectors and covariance matrices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">相关系数与回归辨析详读</span> <span class="course-nav-en" lang="en">Correlation versus regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">均值方差标准差与数值校验详读</span> <span class="course-nav-en" lang="en">Mean, variance, standard deviation, and numerical checks</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-04-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><span class="course-nav-zh" lang="zh">04 · 遗传参数与相关性</span> <span class="course-nav-en" lang="en">Genetic parameters and correlations</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="false" aria-label="展开或折叠此栏: 04 · 遗传参数与相关性 / Genetic parameters and correlations">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-04-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传力与遗传参数</span> <span class="course-nav-en" lang="en">Heritability and genetic parameters</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-04-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传相关与环境互作</span> <span class="course-nav-en" lang="en">Genetic correlation and environmental interaction</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-05-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-6-label"><span class="course-nav-zh" lang="zh">05 · 家系、系谱与近交</span> <span class="course-nav-en" lang="en">Families, pedigrees, and inbreeding</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="false" aria-label="展开或折叠此栏: 05 · 家系、系谱与近交 / Families, pedigrees, and inbreeding">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">家系、同胞与系谱术语</span> <span class="course-nav-en" lang="en">Families, siblings, and pedigree terms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">亲缘、共祖与近交计算</span> <span class="course-nav-en" lang="en">Relationship, kinship, and inbreeding calculations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">动物模型与系谱信息</span> <span class="course-nav-en" lang="en">Animal models and pedigree information</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label"><span class="course-nav-zh" lang="zh">第二篇 · 遗传评估</span> <span class="course-nav-en" lang="en">Part II · Genetic Evaluation</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-06-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-8-label"><span class="course-nav-zh" lang="zh">06 · 育种值与准确度</span> <span class="course-nav-en" lang="en">Breeding values and accuracy</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="false" aria-label="展开或折叠此栏: 06 · 育种值与准确度 / Breeding values and accuracy">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-06-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">准确度与估计风险</span> <span class="course-nav-en" lang="en">Accuracy and estimation risk</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-06-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">PEV、可靠性与输出字段</span> <span class="course-nav-en" lang="en">PEV, reliability, and output fields</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-07-0.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text" id="quarto-sidebar-section-9-label"><span class="course-nav-zh" lang="zh">07 · 育种值计算与 BLUP</span> <span class="course-nav-en" lang="en">Breeding-value Calculation and BLUP</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="true" aria-label="展开或折叠此栏: 07 · 育种值计算与 BLUP / Breeding-value Calculation and BLUP">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">混合模型方程逐步推导</span> <span class="course-nav-en" lang="en">Mixed model equations step by step</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">REML 与方差组分</span> <span class="course-nav-en" lang="en">REML and variance components</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">多性状评估与信息借用</span> <span class="course-nav-en" lang="en">Multi-trait evaluation and information borrowing</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-08-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-10-label"><span class="course-nav-zh" lang="zh">08 · 基因组与三类 BLUP</span> <span class="course-nav-en" lang="en">Genomics and three BLUP approaches</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-controls="quarto-sidebar-section-10" aria-expanded="false" aria-label="展开或折叠此栏: 08 · 基因组与三类 BLUP / Genomics and three BLUP approaches">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-10" aria-labelledby="quarto-sidebar-section-10-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">单步关系矩阵 H</span> <span class="course-nav-en" lang="en">The single-step relationship matrix H</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">基因组质控与样本身份</span> <span class="course-nav-en" lang="en">Genomic quality control and sample identity</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">参考群体与基因组选择</span> <span class="course-nav-en" lang="en">Reference populations and genomic selection</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-controls="quarto-sidebar-section-11" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-11-label"><span class="course-nav-zh" lang="zh">第三篇 · 育种决策</span> <span class="course-nav-en" lang="en">Part III · Breeding Decisions</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-11" aria-labelledby="quarto-sidebar-section-11-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-09-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-12-label"><span class="course-nav-zh" lang="zh">09 · 选择、选配与遗传进展</span> <span class="course-nav-en" lang="en">Selection, mating, and genetic progress</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-controls="quarto-sidebar-section-12" aria-expanded="false" aria-label="展开或折叠此栏: 09 · 选择、选配与遗传进展 / Selection, mating, and genetic progress">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-12" aria-labelledby="quarto-sidebar-section-12-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">多性状选择：先定目标，再分配选择压力</span> <span class="course-nav-en" lang="en">Multi-trait selection: objectives and emphasis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">综合选择指数：一个分数如何连接多个 EBV</span> <span class="course-nav-en" lang="en">Selection indexes: connecting multiple EBVs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">同期群：先确认谁有资格直接比较</span> <span class="course-nav-en" lang="en">Contemporary groups: who can be directly compared?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传联系：让不同组之间有一座桥</span> <span class="course-nav-en" lang="en">Connectedness: a bridge between groups</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">选择反应：每代改良与每年改良</span> <span class="course-nav-en" lang="en">Selection response: per generation versus per year</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-controls="quarto-sidebar-section-13" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-13-label"><span class="course-nav-zh" lang="zh">附录</span> <span class="course-nav-en" lang="en">Appendices</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-13" aria-labelledby="quarto-sidebar-section-13-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-11-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">附录 A · 中英术语速查</span> <span class="course-nav-en" lang="en">Appendix A · Bilingual Glossary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-12-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">附录 B · 资料来源</span> <span class="course-nav-en" lang="en">Appendix B · Sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">本页目录</h2>
+   
+  <ul>
+  <li><a href="#先算一个最简单的预测-start-with-a-simple-predictor" id="toc-先算一个最简单的预测-start-with-a-simple-predictor" class="nav-link active" data-scroll-target="#先算一个最简单的预测-start-with-a-simple-predictor">01 · 先算一个最简单的预测 / Start with a simple predictor</a></li>
+  <li><a href="#为什么要用-blup-why-use-blup" id="toc-为什么要用-blup-why-use-blup" class="nav-link" data-scroll-target="#为什么要用-blup-why-use-blup">02 · 为什么要用 BLUP / Why use BLUP?</a></li>
+  <li><a href="#把动物模型读成数据流-read-the-animal-model-as-a-data-flow" id="toc-把动物模型读成数据流-read-the-animal-model-as-a-data-flow" class="nav-link" data-scroll-target="#把动物模型读成数据流-read-the-animal-model-as-a-data-flow">03 · 把动物模型读成数据流 / Read the animal model as a data flow</a>
+  <ul class="collapse">
+  <li><a href="#xz-像映射表-x-and-z-resemble-mapping-tables" id="toc-xz-像映射表-x-and-z-resemble-mapping-tables" class="nav-link" data-scroll-target="#xz-像映射表-x-and-z-resemble-mapping-tables">X、Z 像映射表 / X and Z resemble mapping tables</a></li>
+  <li><a href="#固定与随机-fixed-and-random-effects" id="toc-固定与随机-fixed-and-random-effects" class="nav-link" data-scroll-target="#固定与随机-fixed-and-random-effects">固定与随机 / Fixed and random effects</a></li>
+  </ul></li>
+  <li><a href="#方差参数控制信息权重-variance-parameters-control-weighting" id="toc-方差参数控制信息权重-variance-parameters-control-weighting" class="nav-link" data-scroll-target="#方差参数控制信息权重-variance-parameters-control-weighting">04 · 方差参数控制信息权重 / Variance parameters control weighting</a></li>
+  <li><a href="#跟着算一次微型-blup-work-through-a-tiny-blup" id="toc-跟着算一次微型-blup-work-through-a-tiny-blup" class="nav-link" data-scroll-target="#跟着算一次微型-blup-work-through-a-tiny-blup">05 · 跟着算一次微型 BLUP / Work through a tiny BLUP</a>
+  <ul class="collapse">
+  <li><a href="#第一步列清假设-step-1-state-the-assumptions" id="toc-第一步列清假设-step-1-state-the-assumptions" class="nav-link" data-scroll-target="#第一步列清假设-step-1-state-the-assumptions">第一步：列清假设 / Step 1: State the assumptions</a></li>
+  <li><a href="#第二步建立关系和映射-step-2-define-relationships-and-mapping" id="toc-第二步建立关系和映射-step-2-define-relationships-and-mapping" class="nav-link" data-scroll-target="#第二步建立关系和映射-step-2-define-relationships-and-mapping">第二步：建立关系和映射 / Step 2: Define relationships and mapping</a></li>
+  <li><a href="#第三步代入计算-step-3-calculate-the-predictions" id="toc-第三步代入计算-step-3-calculate-the-predictions" class="nav-link" data-scroll-target="#第三步代入计算-step-3-calculate-the-predictions">第三步：代入计算 / Step 3: Calculate the predictions</a></li>
+  <li><a href="#第四步计算本例的不确定性-step-4-calculate-uncertainty-in-this-example" id="toc-第四步计算本例的不确定性-step-4-calculate-uncertainty-in-this-example" class="nav-link" data-scroll-target="#第四步计算本例的不确定性-step-4-calculate-uncertainty-in-this-example">第四步：计算本例的不确定性 / Step 4: Calculate uncertainty in this example</a></li>
+  <li><a href="#第五步只改一条输入再复算-step-5-change-one-input-and-recalculate" id="toc-第五步只改一条输入再复算-step-5-change-one-input-and-recalculate" class="nav-link" data-scroll-target="#第五步只改一条输入再复算-step-5-change-one-input-and-recalculate">第五步：只改一条输入再复算 / Step 5: Change One Input and Recalculate</a></li>
+  </ul></li>
+  <li><a href="#进阶混合模型方程-further-detail-mixed-model-equations" id="toc-进阶混合模型方程-further-detail-mixed-model-equations" class="nav-link" data-scroll-target="#进阶混合模型方程-further-detail-mixed-model-equations">06 · 进阶：混合模型方程 / Further detail: mixed model equations</a>
+  <ul class="collapse">
+  <li><a href="#单性状与多性状-single-trait-and-multi-trait-models" id="toc-单性状与多性状-single-trait-and-multi-trait-models" class="nav-link" data-scroll-target="#单性状与多性状-single-trait-and-multi-trait-models">单性状与多性状 / Single-trait and multi-trait models</a></li>
+  </ul></li>
+  <li><a href="#正式评估按什么顺序做-steps-in-a-formal-evaluation" id="toc-正式评估按什么顺序做-steps-in-a-formal-evaluation" class="nav-link" data-scroll-target="#正式评估按什么顺序做-steps-in-a-formal-evaluation">07 · 正式评估按什么顺序做 / Steps in a formal evaluation</a></li>
+  <li><a href="#我的核对笔记-my-verification-notes" id="toc-我的核对笔记-my-verification-notes" class="nav-link" data-scroll-target="#我的核对笔记-my-verification-notes">我的核对笔记 / My Verification Notes</a></li>
+  <li><a href="#延伸阅读-further-reading" id="toc-延伸阅读-further-reading" class="nav-link" data-scroll-target="#延伸阅读-further-reading">延伸阅读 / Further reading</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="路径"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-06-0.html">第二篇 · 遗传评估 / Part II · Genetic Evaluation</a></li><li class="breadcrumb-item"><a href="./chapter-07-0.html">07 · 育种值计算与 BLUP / Breeding-value Calculation and BLUP</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">07-0｜从手算到 BLUP / From hand calculations to BLUP</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><a href="./contents.html">目录 / Contents</a> · <a href="./chapter-06-0.html">上一章 / Previous</a> · <a href="./chapter-08-0.html">下一章 / Next</a></p>
+<p>我理解一段陌生计算时会先缩小输入，所以这里先把 BLUP 缩到一条记录、两个亲本和一个子代。<br>
+When I need to understand an unfamiliar calculation, I make the inputs small, so I start with BLUP for one record, two parents, and one offspring.</p>
+<p>先算一次，再只换子代记录重算，能看出结果从哪一步改变，也能看出亲缘信息是怎么进来的。<br>
+Calculating it once and then changing only the offspring’s record shows which step changes the output and how relationship information enters the calculation.</p>
+<blockquote class="blockquote">
+<p><strong>我的笔记｜BLUP 综合利用信息，不把全部表现差异都当作遗传差异。</strong><br>
+<strong>My note | BLUP combines information without attributing all performance differences to genetics.</strong></p>
+</blockquote>
+<section id="先算一个最简单的预测-start-with-a-simple-predictor" class="level2">
+<h2 class="anchored" data-anchor-id="先算一个最简单的预测-start-with-a-simple-predictor">01 · 先算一个最简单的预测 / Start with a simple predictor</h2>
+<p>下面的简化模型只用一条自身记录，并假设均值与方差参数已知。<br>
+The simplified model below uses one own record and assumes known mean and variance parameters.</p>
+<p>动物需来自适用群体，性状还需校正系统环境影响。<br>
+The animal must belong to the relevant population, with systematic environmental effects accounted for.</p>
+<p>在这些条件下，可用“遗传力 × 表型偏差”预测育种值。<br>
+Under these conditions, predict breeding value as “heritability × phenotypic deviation.”</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mrow><mi>B</mi><mi>V</mi></mrow><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo>=</mo><msup><mi>h</mi><mn>2</mn></msup><mo stretchy="false" form="prefix">(</mo><msub><mi>P</mi><mi>i</mi></msub><mo>−</mo><mi>μ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+\widehat{BV}_i=h^2(P_i-\mu)
+</annotation></semantics></math></p>
+<p>假设均值为 800、个体为 850 g/day、<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>h</mi><mn>2</mn></msup><mo>=</mo><mn>0.30</mn></mrow><annotation encoding="application/x-tex">h^2=0.30</annotation></semantics></math>，则预测为 <strong>+15 g/day</strong>。<br>
+With mean 800, own record 850 g/day, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>h</mi><mn>2</mn></msup><mo>=</mo><mn>0.30</mn></mrow><annotation encoding="application/x-tex">h^2=0.30</annotation></semantics></math>, the prediction is <strong>+15 g/day</strong>.</p>
+<p>沿用单记录模型，若个体记录换成 860 g/day、均值仍为 800 g/day、遗传力仍为 0.30，表型偏差就是 +60 g/day。<br>
+In the same single-record model, changing the record to 860 g/day with a mean of 800 g/day and heritability of 0.30 gives a phenotypic deviation of +60 g/day.</p>
+<p>这里估计育种值为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.30</mn><mo stretchy="false" form="prefix">(</mo><mn>860</mn><mo>−</mo><mn>800</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>+</mi><mn>18</mn></mrow><annotation encoding="application/x-tex">0.30(860-800)=+18</annotation></semantics></math> g/day，这个代入只用来核对公式如何随输入变化。<br>
+This gives an estimated breeding value of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.30</mn><mo stretchy="false" form="prefix">(</mo><mn>860</mn><mo>−</mo><mn>800</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>+</mi><mn>18</mn></mrow><annotation encoding="application/x-tex">0.30(860-800)=+18</annotation></semantics></math> g/day and shows how that equation responds to an input change.</p>
+<p>观察优势是 +50，但模型只将其中一部分预测为遗传优势。<br>
+The observed advantage is +50, but only part is predicted to be genetic.</p>
+<p>把偏差向基准拉回叫<strong>收缩</strong>。<br>
+This movement of a deviation toward the base is called <strong>shrinkage</strong>.</p>
+<p>一般情况下，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>h</mi><mn>2</mn></msup><annotation encoding="application/x-tex">h^2</annotation></semantics></math> 不能作为通用系数乘到所有原始记录上。<br>
+In general, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>h</mi><mn>2</mn></msup><annotation encoding="application/x-tex">h^2</annotation></semantics></math> is not a universal multiplier for raw records.</p>
+<hr>
+</section>
+<section id="为什么要用-blup-why-use-blup" class="level2">
+<h2 class="anchored" data-anchor-id="为什么要用-blup-why-use-blup">02 · 为什么要用 BLUP / Why use BLUP?</h2>
+<p>实际数据包含不同场区、批次、性别、日龄、亲属与重复测量。<br>
+Real data include different farms, batches, sexes, ages, relatives, and repeated measurements.</p>
+<p><strong>BLUP</strong>是最佳线性无偏预测。<br>
+<strong>BLUP</strong> means best linear unbiased prediction.</p>
+<p>它在指定模型与协方差假设下，联合估计固定效应并预测随机效应。<br>
+Under specified model and covariance assumptions, it jointly estimates fixed effects and predicts random effects.</p>
+<p>“最佳”限于其理论条件，不能保证错误数据或模型仍给出正确结果。<br>
+“Best” applies within its theoretical conditions and does not protect against incorrect data or models.</p>
+<hr>
+</section>
+<section id="把动物模型读成数据流-read-the-animal-model-as-a-data-flow" class="level2">
+<h2 class="anchored" data-anchor-id="把动物模型读成数据流-read-the-animal-model-as-a-data-flow">03 · 把动物模型读成数据流 / Read the animal model as a data flow</h2>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold-italic">𝒚</mi><mo>=</mo><mi mathvariant="bold-italic">𝑿</mi><mi mathvariant="bold-italic">𝒃</mi><mo>+</mo><mi mathvariant="bold-italic">𝒁</mi><mi mathvariant="bold-italic">𝒂</mi><mo>+</mo><mi mathvariant="bold-italic">𝒆</mi><mo>,</mo><mspace width="2.0em"></mspace><mrow><mi mathvariant="normal">Var</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi mathvariant="bold-italic">𝒂</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi mathvariant="bold-italic">𝑲</mi><msubsup><mi>σ</mi><mi>A</mi><mn>2</mn></msubsup><mo>,</mo><mspace width="1.0em"></mspace><mrow><mi mathvariant="normal">Var</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi mathvariant="bold-italic">𝒆</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi mathvariant="bold-italic">𝑰</mi><msubsup><mi>σ</mi><mi>e</mi><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">
+\mathbf y=\mathbf X\mathbf b+\mathbf Z\mathbf a+\mathbf e,\qquad
+\operatorname{Var}(\mathbf a)=\mathbf K\sigma_A^2,\quad
+\operatorname{Var}(\mathbf e)=\mathbf I\sigma_e^2
+</annotation></semantics></math></p>
+<ul>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> 是表型向量，即所有观测记录。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> is the phenotype vector containing the observed records.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math> 是固定效应，例如批次、性别分类效应及日龄回归系数。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math> holds fixed effects, such as batch and sex classifications or an age-regression coefficient.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math> 是动物的加性遗传随机效应，其预测值就是 EBV。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math> holds additive genetic random effects, whose predictions are EBVs.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>e</mi><annotation encoding="application/x-tex">e</annotation></semantics></math> 是残差。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>e</mi><annotation encoding="application/x-tex">e</annotation></semantics></math> holds residuals.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math> 是动物关系矩阵，系谱模型中 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mi>A</mi></mrow><annotation encoding="application/x-tex">K=A</annotation></semantics></math>。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math> is the animal relationship matrix, with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mi>A</mi></mrow><annotation encoding="application/x-tex">K=A</annotation></semantics></math> in a pedigree model.</p></li>
+<li><p>粗体 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>I</mi><annotation encoding="application/x-tex">I</annotation></semantics></math> 是单位矩阵，不是第 01 章的上位互作。<br>
+Bold <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>I</mi><annotation encoding="application/x-tex">I</annotation></semantics></math> is the identity matrix, not the epistasis term in Chapter 01.</p></li>
+</ul>
+<section id="xz-像映射表-x-and-z-resemble-mapping-tables" class="level3">
+<h3 class="anchored" data-anchor-id="xz-像映射表-x-and-z-resemble-mapping-tables">X、Z 像映射表 / X and Z resemble mapping tables</h3>
+<p><strong>X</strong>把每条记录映射到对应的固定效应。<br>
+<strong>X</strong> maps each record to its fixed effects.</p>
+<p><strong>Z</strong>把每条记录映射到被测动物。<br>
+<strong>Z</strong> maps each record to the measured animal.</p>
+<p>可以把它们类比为数据库关联后的指示列。<br>
+Think of them as indicator columns after database joins.</p>
+<p>一头动物有多条记录时，Z 的多行可以指向同一个动物。<br>
+Several rows of Z can refer to one animal when it has repeated records.</p>
+<p>没有自身记录的祖先仍可通过亲缘关系获得预测。<br>
+Ancestors without own records can still receive predictions through relationships.</p>
+</section>
+<section id="固定与随机-fixed-and-random-effects" class="level3">
+<h3 class="anchored" data-anchor-id="固定与随机-fixed-and-random-effects">固定与随机 / Fixed and random effects</h3>
+<p>“固定”不表示数值永远不变，“随机”也不表示随意填数。<br>
+“Fixed” does not mean permanently constant, and “random” does not mean arbitrary.</p>
+<p>固定效应估计指定水平的差异。<br>
+Fixed effects estimate differences among specified levels.</p>
+<p>随机效应按群体分布和协方差结构建模，信息不足时发生收缩。<br>
+Random effects use population distributions and covariance structures, producing shrinkage when information is limited.</p>
+<p>同窝、永久环境或母体作用可能需要扩展模型，不能都塞进遗传效应。<br>
+Litter, permanent-environmental, and maternal effects may require model extensions rather than being absorbed into genetics.</p>
+<hr>
+</section>
+</section>
+<section id="方差参数控制信息权重-variance-parameters-control-weighting" class="level2">
+<h2 class="anchored" data-anchor-id="方差参数控制信息权重-variance-parameters-control-weighting">04 · 方差参数控制信息权重 / Variance parameters control weighting</h2>
+<p>只有加性与独立残差时，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>h</mi><mn>2</mn></msup><mo>=</mo><msubsup><mi>σ</mi><mi>A</mi><mn>2</mn></msubsup><mi>/</mi><mo stretchy="false" form="prefix">(</mo><msubsup><mi>σ</mi><mi>A</mi><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>σ</mi><mi>e</mi><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h^2=\sigma_A^2/(\sigma_A^2+\sigma_e^2)</annotation></semantics></math>。<br>
+With only additive genetics and independent residuals, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>h</mi><mn>2</mn></msup><mo>=</mo><msubsup><mi>σ</mi><mi>A</mi><mn>2</mn></msubsup><mi>/</mi><mo stretchy="false" form="prefix">(</mo><msubsup><mi>σ</mi><mi>A</mi><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>σ</mi><mi>e</mi><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">h^2=\sigma_A^2/(\sigma_A^2+\sigma_e^2)</annotation></semantics></math>.</p>
+<p>残差相对越大，单条记录提供的遗传证据越弱。<br>
+Relatively larger residual variance weakens the genetic evidence in one record.</p>
+<ul>
+<li><p><strong>REML</strong>是限制最大似然，可用于估计方差组分。<br>
+<strong>REML</strong> is restricted maximum likelihood and can estimate variance components.</p></li>
+<li><p><strong>BLUP</strong>利用这些组分预测育种值。<br>
+<strong>BLUP</strong> uses those components to predict breeding values.</p></li>
+</ul>
+<p>一个软件流程可以执行两项任务，但它们不是同一个统计问题。<br>
+One software pipeline may perform both tasks, but they are different statistical problems.</p>
+<hr>
+</section>
+<section id="跟着算一次微型-blup-work-through-a-tiny-blup" class="level2">
+<h2 class="anchored" data-anchor-id="跟着算一次微型-blup-work-through-a-tiny-blup">05 · 跟着算一次微型 BLUP / Work through a tiny BLUP</h2>
+<section id="第一步列清假设-step-1-state-the-assumptions" class="level3">
+<h3 class="anchored" data-anchor-id="第一步列清假设-step-1-state-the-assumptions">第一步：列清假设 / Step 1: State the assumptions</h3>
+<p>以下完全是假设教学模型。<br>
+The following is a wholly hypothetical teaching model.</p>
+<ul>
+<li><p>S、D 是彼此无关且不近交的父母，C 是它们的子代。<br>
+S and D are unrelated, non-inbred parents of C.</p></li>
+<li><p>只有 C 有一条日增重记录，为 850 g/day。<br>
+Only C has a daily-gain record, which is 850 g/day.</p></li>
+<li><p>总体均值<strong>已知为 800 g/day</strong>。<br>
+The population mean is <strong>known to be 800 g/day</strong>.</p></li>
+<li><p>加性遗传方差为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>σ</mi><mi>A</mi><mn>2</mn></msubsup><mo>=</mo><mn>300</mn></mrow><annotation encoding="application/x-tex">\sigma_A^2=300</annotation></semantics></math>，残差方差为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>σ</mi><mi>e</mi><mn>2</mn></msubsup><mo>=</mo><mn>700</mn></mrow><annotation encoding="application/x-tex">\sigma_e^2=700</annotation></semantics></math>。<br>
+Additive genetic variance is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>σ</mi><mi>A</mi><mn>2</mn></msubsup><mo>=</mo><mn>300</mn></mrow><annotation encoding="application/x-tex">\sigma_A^2=300</annotation></semantics></math>, and residual variance is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>σ</mi><mi>e</mi><mn>2</mn></msubsup><mo>=</mo><mn>700</mn></mrow><annotation encoding="application/x-tex">\sigma_e^2=700</annotation></semantics></math>.</p></li>
+<li><p>两项方差单位均为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(g/day)^2</annotation></semantics></math>。<br>
+Both variances have units of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(g/day)^2</annotation></semantics></math>.</p></li>
+<li><p>模型没有额外环境效应，也不需要估计未知均值。<br>
+The model has no additional environmental effects and does not estimate an unknown mean.</p></li>
+</ul>
+</section>
+<section id="第二步建立关系和映射-step-2-define-relationships-and-mapping" class="level3">
+<h3 class="anchored" data-anchor-id="第二步建立关系和映射-step-2-define-relationships-and-mapping">第二步：建立关系和映射 / Step 2: Define relationships and mapping</h3>
+<p>动物顺序为 S、D、C，Z 仅指向有记录的 C。<br>
+The animal order is S, D, C, and Z refers only to the recorded animal C.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold-italic">𝑨</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><mi mathvariant="bold-italic">𝒁</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>0</mn></mtd><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">
+\mathbf A=\begin{bmatrix}1&amp;0&amp;0.5\\0&amp;1&amp;0.5\\0.5&amp;0.5&amp;1\end{bmatrix},
+\qquad \mathbf Z=\begin{bmatrix}0&amp;0&amp;1\end{bmatrix}
+</annotation></semantics></math></p>
+</section>
+<section id="第三步代入计算-step-3-calculate-the-predictions" class="level3">
+<h3 class="anchored" data-anchor-id="第三步代入计算-step-3-calculate-the-predictions">第三步：代入计算 / Step 3: Calculate the predictions</h3>
+<p>均值已知时，BLUP 可写成“遗传与观测的协方差 × 观测方差的逆 × 观测偏差”。<br>
+With a known mean, BLUP is “genetic–observation covariance × inverse observation variance × observed deviation.”</p>
+<p>这里只有一条观测，不需要复杂矩阵求逆。<br>
+There is only one observation, so no complicated matrix inversion is needed.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi mathvariant="bold-italic">𝒂</mi><mo accent="true">̂</mo></mover><mo>=</mo><mi mathvariant="bold-italic">𝑨</mi><msup><mi mathvariant="bold-italic">𝒁</mi><mo>′</mo></msup><msubsup><mi>σ</mi><mi>A</mi><mn>2</mn></msubsup><msup><mrow><mo stretchy="true" form="prefix">(</mo><mi mathvariant="bold-italic">𝒁</mi><mi mathvariant="bold-italic">𝑨</mi><msup><mi mathvariant="bold-italic">𝒁</mi><mo>′</mo></msup><msubsup><mi>σ</mi><mi>A</mi><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>σ</mi><mi>e</mi><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo stretchy="false" form="prefix">(</mo><mn>850</mn><mo>−</mo><mn>800</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>0.5</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>1</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mfrac><mn>300</mn><mn>1000</mn></mfrac><mspace width="0.167em"></mspace><mn>50</mn><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mn>7.5</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>7.5</mn></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mn>15</mn></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mspace width="0.278em"></mspace><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi></mrow><annotation encoding="application/x-tex">
+\widehat{\mathbf a}
+=\mathbf A\mathbf Z'\sigma_A^2
+\left(\mathbf Z\mathbf A\mathbf Z'\sigma_A^2+\sigma_e^2\right)^{-1}(850-800)
+=\begin{bmatrix}0.5\\0.5\\1\end{bmatrix}\frac{300}{1000}\,50
+=\begin{bmatrix}7.5\\7.5\\15\end{bmatrix}\;g/day
+</annotation></semantics></math></p>
+<ul>
+<li><p>C 的 EBV 是 <strong>+15 g/day</strong>。<br>
+C’s EBV is <strong>+15 g/day</strong>.</p></li>
+<li><p>S、D 虽没有自身记录，也各获得 <strong>+7.5 g/day</strong> 的预测。<br>
+S and D each receive <strong>+7.5 g/day</strong> despite having no own records.</p></li>
+</ul>
+<p>三个预测使用同一条记录，不能再当作三条独立证据重复相加。<br>
+All three predictions use the same record and must not be added again as independent evidence.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/07-0-tiny-blup-one-record-three-predictions.png" class="img-fluid figure-img"></p>
+<figcaption>一条日增重记录得到三个育种值预测 / Three breeding-value predictions from one daily gain record</figcaption>
+</figure>
+</div>
+<p><strong>图 07-0A</strong>　在已知总体均值和方差的教学模型中，子代 C 的一条日增重记录给出 C 的估计育种值 +15 g/day，父母 S 和 D 各为 +7.5 g/day。<br>
+<strong>Figure 07-0A</strong>　Under the teaching model with known mean and variances, C’s one daily gain record gives an EBV of +15 g/day for C and +7.5 g/day each for its parents S and D.</p>
+<p>三个预测共享这一条记录，图中的亲缘系数具体指 A 矩阵中对应动物与 C 的元素。<br>
+All three predictions share this one record, and the relationship coefficients shown are the A-matrix entries for each animal paired with C.</p>
+</section>
+<section id="第四步计算本例的不确定性-step-4-calculate-uncertainty-in-this-example" class="level3">
+<h3 class="anchored" data-anchor-id="第四步计算本例的不确定性-step-4-calculate-uncertainty-in-this-example">第四步：计算本例的不确定性 / Step 4: Calculate uncertainty in this example</h3>
+<p>C 的预测误差方差为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>E</mi><mi>V</mi><mo>=</mo><mn>300</mn><mo>−</mo><msup><mn>300</mn><mn>2</mn></msup><mi>/</mi><mn>1000</mn><mo>=</mo><mn>210</mn></mrow><annotation encoding="application/x-tex">PEV=300-300^2/1000=210</annotation></semantics></math>。<br>
+C’s prediction error variance is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>E</mi><mi>V</mi><mo>=</mo><mn>300</mn><mo>−</mo><msup><mn>300</mn><mn>2</mn></msup><mi>/</mi><mn>1000</mn><mo>=</mo><mn>210</mn></mrow><annotation encoding="application/x-tex">PEV=300-300^2/1000=210</annotation></semantics></math>.</p>
+<p>其可靠性为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>E</mi><mi>L</mi><mo>=</mo><mn>1</mn><mo>−</mo><mn>210</mn><mi>/</mi><mn>300</mn><mo>=</mo><mn>0.30</mn></mrow><annotation encoding="application/x-tex">REL=1-210/300=0.30</annotation></semantics></math>。<br>
+Its reliability is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>E</mi><mi>L</mi><mo>=</mo><mn>1</mn><mo>−</mo><mn>210</mn><mi>/</mi><mn>300</mn><mo>=</mo><mn>0.30</mn></mrow><annotation encoding="application/x-tex">REL=1-210/300=0.30</annotation></semantics></math>.</p>
+<p>其准确度为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>C</mi><mi>C</mi><mo>=</mo><msqrt><mn>0.30</mn></msqrt><mo>≈</mo><mn>0.548</mn></mrow><annotation encoding="application/x-tex">ACC=\sqrt{0.30}\approx0.548</annotation></semantics></math>。<br>
+Its accuracy is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>C</mi><mi>C</mi><mo>=</mo><msqrt><mn>0.30</mn></msqrt><mo>≈</mo><mn>0.548</mn></mrow><annotation encoding="application/x-tex">ACC=\sqrt{0.30}\approx0.548</annotation></semantics></math>.</p>
+<p>这是均值与方差已知的特例，不能作为生产准确度的通用捷径。<br>
+This known-mean, known-variance case is not a general shortcut for production accuracy.</p>
+</section>
+<section id="第五步只改一条输入再复算-step-5-change-one-input-and-recalculate" class="level3">
+<h3 class="anchored" data-anchor-id="第五步只改一条输入再复算-step-5-change-one-input-and-recalculate">第五步：只改一条输入再复算 / Step 5: Change One Input and Recalculate</h3>
+<p>我保留同一系谱、均值和方差，只把 C 的一条记录从 850 改成 900 g/day，这样就能检查预测是怎样随观测偏差改变的。<br>
+I keep the pedigree, mean, and variances fixed and change C’s one record from 850 to 900 g/day, so I can check how the predictions follow the observed deviation.</p>
+<p>总体均值仍是 800 g/day，遗传方差和残差方差仍为 300 和 700 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(\mathrm{g/day})^2</annotation></semantics></math>，S、D 互不相关且不近交。<br>
+The population mean is still 800 g/day, genetic and residual variances are still 300 and 700 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(\mathrm{g/day})^2</annotation></semantics></math>, and S and D are unrelated and non-inbred.</p>
+<p>偏差变为 +100 g/day 后，S、D、C 的预测依次是 +15、+15、+30 g/day。<br>
+With the deviation now +100 g/day, the predictions for S, D, and C are +15, +15, and +30 g/day.</p>
+<p>模型与信息结构保持相同，所以本例中 C 的预测误差方差、可靠性和准确度仍是原来的值。<br>
+The model and information structure are unchanged, so C’s prediction error variance, reliability, and accuracy keep their original values in this example.</p>
+<p>这段标准库代码在内存中复算两次条件已知的教学模型。<br>
+This standard-library code reproduces both runs of the known-parameter teaching model in memory.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> sqrt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> tiny_blup(child_record):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Known mean 800; additive variance 300; residual variance 700.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># S and D are unrelated, non-inbred parents of C; only C is recorded.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    deviation <span class="op">=</span> child_record <span class="op">-</span> <span class="dv">800</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    shrinkage <span class="op">=</span> <span class="dv">300</span> <span class="op">/</span> (<span class="dv">300</span> <span class="op">+</span> <span class="dv">700</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">tuple</span>(k <span class="op">*</span> shrinkage <span class="op">*</span> deviation <span class="cf">for</span> k <span class="kw">in</span> (<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">1.0</span>))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'EBV(S,D,C) at 850:'</span>, tiny_blup(<span class="dv">850</span>))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'EBV(S,D,C) at 900:'</span>, tiny_blup(<span class="dv">900</span>))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>pev <span class="op">=</span> <span class="dv">300</span> <span class="op">-</span> <span class="dv">300</span><span class="op">**</span><span class="dv">2</span> <span class="op">/</span> (<span class="dv">300</span> <span class="op">+</span> <span class="dv">700</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>rel <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> pev <span class="op">/</span> <span class="dv">300</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'PEV(C)=</span><span class="sc">{</span>pev<span class="sc">:.2f}</span><span class="ss">, REL(C)=</span><span class="sc">{</span>rel<span class="sc">:.2f}</span><span class="ss">, ACC(C)=</span><span class="sc">{</span>sqrt(rel)<span class="sc">:.3f}</span><span class="ss">'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>基础 R 版沿用一条子代记录和同一组已知参数，输出顺序仍为父亲 S、母亲 D 和子代 C。<br>
+The base R version uses the same offspring observation and known parameters, with outputs ordered as sire S, dam D, and offspring C.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>population_mean <span class="ot">&lt;-</span> <span class="dv">800</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>additive_var <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>residual_var <span class="ot">&lt;-</span> <span class="dv">700</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>observation_var <span class="ot">&lt;-</span> additive_var <span class="sc">+</span> residual_var</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>tiny_blup <span class="ot">&lt;-</span> <span class="cf">function</span>(child_record) {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Only C is recorded; S and D are unrelated and non-inbred.</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  deviation <span class="ot">&lt;-</span> child_record <span class="sc">-</span> population_mean</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  shrinkage <span class="ot">&lt;-</span> additive_var <span class="sc">/</span> observation_var</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">S =</span> <span class="fl">0.5</span>, <span class="at">D =</span> <span class="fl">0.5</span>, <span class="at">C =</span> <span class="dv">1</span>) <span class="sc">*</span> shrinkage <span class="sc">*</span> deviation</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (record <span class="cf">in</span> <span class="fu">c</span>(<span class="dv">850</span>, <span class="dv">900</span>)) {</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  values <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="fu">sprintf</span>(<span class="st">"%.1f"</span>, <span class="fu">tiny_blup</span>(record)), <span class="at">collapse =</span> <span class="st">", "</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"EBV(S,D,C) at %d: (%s)</span><span class="sc">\n</span><span class="st">"</span>, record, values))</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>pev <span class="ot">&lt;-</span> additive_var <span class="sc">-</span> additive_var<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> observation_var</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>rel <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> pev <span class="sc">/</span> additive_var</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>acc <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(rel)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"PEV(C)=%.2f, REL(C)=%.2f, ACC(C)=%.3f</span><span class="sc">\n</span><span class="st">"</span>, pev, rel, acc))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>两次输入和不确定性指标的复算输出如下。<br>
+The reproduced output shows both inputs and the uncertainty measures.</p>
+<pre class="text"><code>EBV(S,D,C) at 850: (7.5, 7.5, 15.0)
+EBV(S,D,C) at 900: (15.0, 15.0, 30.0)
+PEV(C)=210.00, REL(C)=0.30, ACC(C)=0.548</code></pre>
+<p>实际评估还要核对环境效应、信息结构与方差参数。<br>
+An actual evaluation also requires checks of environmental effects, information structure, and variance parameters.</p>
+<hr>
+</section>
+</section>
+<section id="进阶混合模型方程-further-detail-mixed-model-equations" class="level2">
+<h2 class="anchored" data-anchor-id="进阶混合模型方程-further-detail-mixed-model-equations">06 · 进阶：混合模型方程 / Further detail: mixed model equations</h2>
+<p>固定效应需从数据估计时，在独立同方差残差假设下可使用下面的标准方程。<br>
+When fixed effects need estimation, the standard equations below apply under independent, equal-residual-variance assumptions.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msup><mi>X</mi><mo>′</mo></msup><mi>X</mi></mtd><mtd columnalign="center" style="text-align: center"><msup><mi>X</mi><mo>′</mo></msup><mi>Z</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msup><mi>Z</mi><mo>′</mo></msup><mi>X</mi></mtd><mtd columnalign="center" style="text-align: center"><msup><mi>Z</mi><mo>′</mo></msup><mi>Z</mi><mo>+</mo><mi>λ</mi><msup><mi>K</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>b</mi><mo accent="true">̂</mo></mover></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mover><mi>a</mi><mo accent="true">̂</mo></mover></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msup><mi>X</mi><mo>′</mo></msup><mi>y</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msup><mi>Z</mi><mo>′</mo></msup><mi>y</mi></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><mi>λ</mi><mo>=</mo><mfrac><msubsup><mi>σ</mi><mi>e</mi><mn>2</mn></msubsup><msubsup><mi>σ</mi><mi>A</mi><mn>2</mn></msubsup></mfrac></mrow><annotation encoding="application/x-tex">
+\begin{bmatrix}
+X'X&amp;X'Z\\
+Z'X&amp;Z'Z+\lambda K^{-1}
+\end{bmatrix}
+\begin{bmatrix}\hat b\\\hat a\end{bmatrix}
+=
+\begin{bmatrix}X'y\\Z'y\end{bmatrix},\qquad
+\lambda=\frac{\sigma_e^2}{\sigma_A^2}
+</annotation></semantics></math></p>
+<ul>
+<li><p>撇号表示<strong>转置</strong>。<br>
+A prime denotes <strong>transpose</strong>.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math> 是残差方差与遗传方差之比。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math> is the residual-to-genetic variance ratio.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><msup><mi>K</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\lambda K^{-1}</annotation></semantics></math> 可理解为带亲缘结构的约束，类似正则化。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><msup><mi>K</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\lambda K^{-1}</annotation></semantics></math> resembles a relationship-structured constraint, similar to regularization.</p></li>
+</ul>
+<p>这个约束来自遗传协方差模型，不能为了排名好看而任意调整。<br>
+The constraint comes from the genetic covariance model and should not be altered to manufacture attractive rankings.</p>
+<p>实际程序通常解线性方程组，而不显式形成整个大矩阵的逆。<br>
+Programs generally solve linear systems instead of explicitly inverting a whole large matrix.</p>
+<p>只有一条记录且均值未知时，不能像前面的特例那样区分总体均值与个体优势。<br>
+With only one record and an unknown mean, population level and individual advantage cannot be separated as in the earlier special case.</p>
+<section id="单性状与多性状-single-trait-and-multi-trait-models" class="level3">
+<h3 class="anchored" data-anchor-id="单性状与多性状-single-trait-and-multi-trait-models">单性状与多性状 / Single-trait and multi-trait models</h3>
+<p><strong>单性状模型</strong>一次分析一个性状。<br>
+A <strong>single-trait model</strong> analyzes one trait.</p>
+<p><strong>多性状模型</strong>联合分析多个性状，并利用遗传协方差与残差协方差。<br>
+A <strong>multi-trait model</strong> jointly analyzes several traits using genetic and residual covariances.</p>
+<p>例如，体重与背膘可以共同提供信息。<br>
+For example, weight and backfat can contribute information jointly.</p>
+<p>两个 EBV 列表算完再求相关，不能代替多性状模型。<br>
+Correlating two completed EBV lists does not replace a multi-trait model.</p>
+<p>对两个性状，遗传协方差矩阵的对角线是方差，非对角线是协方差。<br>
+For two traits, a genetic covariance matrix has variances on the diagonal and their covariance off the diagonal.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Σ</mi><mi>A</mi></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><msub><mi>A</mi><mn>1</mn></msub><mn>2</mn></msubsup></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>σ</mi><mrow><msub><mi>A</mi><mn>1</mn></msub><mo>,</mo><msub><mi>A</mi><mn>2</mn></msub></mrow></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>σ</mi><mrow><msub><mi>A</mi><mn>1</mn></msub><mo>,</mo><msub><mi>A</mi><mn>2</mn></msub></mrow></msub></mtd><mtd columnalign="center" style="text-align: center"><msubsup><mi>σ</mi><msub><mi>A</mi><mn>2</mn></msub><mn>2</mn></msubsup></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">
+\Sigma_A=\begin{bmatrix}
+\sigma_{A_1}^2&amp;\sigma_{A_1,A_2}\\
+\sigma_{A_1,A_2}&amp;\sigma_{A_2}^2
+\end{bmatrix}
+</annotation></semantics></math></p>
+<p>这里的性状间联系，要与 A、G、H 描述的动物间联系分开理解。<br>
+Distinguish these between-trait connections from the between-animal relationships described by A, G, and H.</p>
+<hr>
+</section>
+</section>
+<section id="正式评估按什么顺序做-steps-in-a-formal-evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="正式评估按什么顺序做-steps-in-a-formal-evaluation">07 · 正式评估按什么顺序做 / Steps in a formal evaluation</h2>
+<ul>
+<li><p><strong>1｜明确性状与目标。</strong><br>
+<strong>1 | Define traits and objectives.</strong></p></li>
+<li><p><strong>2｜核对身份、单位、缺失与系谱。</strong><br>
+<strong>2 | Check identity, units, missingness, and pedigree.</strong></p></li>
+<li><p><strong>3｜定义同期群与其他效应。</strong><br>
+<strong>3 | Define contemporary groups and other effects.</strong></p></li>
+<li><p><strong>4｜估计或验证方差组分。</strong><br>
+<strong>4 | Estimate or validate variance components.</strong></p></li>
+<li><p><strong>5｜构建关系与模型。</strong><br>
+<strong>5 | Construct relationships and the model.</strong></p></li>
+<li><p><strong>6｜求解方程。</strong><br>
+<strong>6 | Solve the equations.</strong></p></li>
+<li><p><strong>7｜输出 EBV 和可获得的准确度。</strong><br>
+<strong>7 | Report EBVs and available accuracies.</strong></p></li>
+<li><p><strong>8｜检查基准、偏差、验证结果与趋势。</strong><br>
+<strong>8 | Check bases, bias, validation results, and trends.</strong></p></li>
+</ul>
+<p>成功输出一个数字，不能替代这些检查。<br>
+Producing a number does not replace these checks.</p>
+<p>本章微型例题为自拟，不来自生产评估。<br>
+The tiny example is original teaching material, not a production evaluation.</p>
+<hr>
+</section>
+<section id="我的核对笔记-my-verification-notes" class="level2">
+<h2 class="anchored" data-anchor-id="我的核对笔记-my-verification-notes">我的核对笔记 / My Verification Notes</h2>
+<p>把固定效应、动物随机效应和残差分开之后，我会在每次复算时记录模型、动物顺序和参数口径。<br>
+After separating fixed effects, animal random effects, and residuals, I record the model, animal order, and parameter definitions for each reproduction of the calculation.</p>
+<p>最小例子能查出单位和方向错误，运行真实评估还要看记录质量、模型设定、方差估计和对目标群体的验证。<br>
+A minimal example can catch unit and direction errors, while actual evaluations also require record quality, model specification, variance estimation, and validation on the target population.</p>
+</section>
+<section id="延伸阅读-further-reading" class="level2">
+<h2 class="anchored" data-anchor-id="延伸阅读-further-reading">延伸阅读 / Further reading</h2>
+<p>下面按原始阅读列表顺序提供本地详读，重复来源复用同一篇笔记以保持解释一致。<br>
+Local readings follow the original source-list order, reusing a single note for repeated sources to keep explanations consistent.</p>
+<ul>
+<li><p><strong><a href="./chapter-05-3.html">混合模型与动物模型</a></strong>。<br>
+<strong><a href="./chapter-05-3.html">Mixed models and animal models</a></strong>.</p></li>
+<li><p><strong><a href="./chapter-07-2.html">混合模型方程逐步推导</a></strong>。<br>
+<strong><a href="./chapter-07-2.html">Mixed model equations step by step</a></strong>.</p></li>
+<li><p><strong><a href="./chapter-07-3.html">REML 与方差组分</a></strong>。<br>
+<strong><a href="./chapter-07-3.html">REML and variance components</a></strong>.</p></li>
+<li><p><strong><a href="./chapter-06-3.html">可靠性计算与 PEV</a></strong>。<br>
+<strong><a href="./chapter-06-3.html">Reliability calculations and PEV</a></strong>.</p></li>
+<li><p><strong><a href="./chapter-07-5.html">多性状评估与信息借用</a></strong>。<br>
+<strong><a href="./chapter-07-5.html">Multi-trait evaluation and information borrowing</a></strong>.</p></li>
+</ul>
+<p>原始来源链接保留如下，无法直接读取的来源及实际使用的替代材料已在对应详读中说明。<br>
+Original source links follow, with unavailable sources and the alternatives actually used identified in the corresponding notes.</p>
+<ul>
+<li><p><a href="https://masuday.github.io/blupf90_tutorial/quicktour_mixed.html">BLUPF90：混合模型与动物模型</a>。<br>
+<a href="https://masuday.github.io/blupf90_tutorial/quicktour_mixed.html">BLUPF90: mixed and animal models</a>.</p></li>
+<li><p><a href="https://nce.ads.uga.edu/wiki/lib/exe/fetch.php?media=blupf90_day1_uf2022.pdf">UGA：混合模型方程讲义</a>。<br>
+<a href="https://nce.ads.uga.edu/wiki/lib/exe/fetch.php?media=blupf90_day1_uf2022.pdf">UGA: mixed model equations</a>.</p></li>
+<li><p><a href="https://masuday.github.io/blupf90_tutorial/vc_aireml.html">参考资料：BLUPF90：REML</a>。<br>
+<a href="https://masuday.github.io/blupf90_tutorial/vc_aireml.html">BLUPF90: REML</a>.</p></li>
+<li><p><a href="https://masuday.github.io/blupf90_tutorial/largescale_reliability.html">可靠性计算</a>。<br>
+<a href="https://masuday.github.io/blupf90_tutorial/largescale_reliability.html">reliability calculations</a>.</p></li>
+<li><p><a href="https://breedplan.une.edu.au/the-breedplan-advantages/the-breedplan-advantage-multi-trait-analysis/">多性状分析原理</a>。<br>
+<a href="https://breedplan.une.edu.au/the-breedplan-advantages/the-breedplan-advantage-multi-trait-analysis/">multi-trait analysis</a>.</p></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"可滚动的代码","output":"可滚动的输出"};
+  </script>
+<nav class="page-navigation" aria-label="页面">
+  <div class="nav-page nav-page-previous">
+      <a href="./chapter-06-3.html" class="pagination-link" aria-label="PEV、可靠性与输出字段 / PEV, reliability, and output fields">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">PEV、可靠性与输出字段 / PEV, reliability, and output fields</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./chapter-07-2.html" class="pagination-link" aria-label="混合模型方程逐步推导 / Mixed model equations step by step">
+        <span class="nav-page-text">混合模型方程逐步推导 / Mixed model equations step by step</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

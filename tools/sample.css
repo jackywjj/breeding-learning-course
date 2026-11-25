@@ -1,0 +1,4 @@
+/* Long MathML expressions scroll inside their paragraph on narrow screens. */
+main p:has(math) {
+  overflow-x: auto;
+}

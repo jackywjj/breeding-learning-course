@@ -1,0 +1,68 @@
+/*-- scss:defaults --*/
+$primary: #982f24;
+$body-color: #302527;
+$link-color: $primary;
+$link-hover-color: #721e17;
+$navbar-bg: #fff9ef;
+$navbar-fg: #392525;
+$navbar-hl: $primary;
+$sidebar-bg: #fbf6ef;
+$sidebar-fg: #513e3a;
+$sidebar-hl: $primary;
+$font-family-sans-serif: "Hiragino Sans GB", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+
+/*-- scss:rules --*/
+#quarto-header { border-bottom: 1px solid #e9d6c9; }
+#title-block-header .title { color: $primary; }
+
+#quarto-sidebar {
+  .sidebar-item { margin-block: 0.32rem 0.55rem; }
+
+  .sidebar-item-text { min-width: 0; }
+
+  .menu-text {
+    display: grid;
+    gap: 0.13rem;
+    min-width: 0;
+    line-height: 1.35;
+  }
+
+  .course-nav-zh { font-size: 0.91rem; font-weight: 600; }
+  .course-nav-en { font-size: 0.76rem; color: #66524c; }
+  .sidebar-link.active .course-nav-en { color: inherit; }
+
+  .sidebar-section {
+    border-inline-start: 1px solid #ead9cf;
+    margin-inline-start: 0.18rem;
+    padding-inline-start: 0.65rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .quarto-secondary-nav .quarto-page-breadcrumbs {
+    min-width: 0;
+
+    .breadcrumb { flex-wrap: nowrap; }
+    .breadcrumb-item:not(:last-child) { display: none; }
+
+    .breadcrumb-item:last-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .breadcrumb-item:last-child::before { display: none; }
+  }
+}
+
+.book-intro {
+  margin-block: 1.25rem 2.15rem;
+
+  img { display: block; width: 100%; }
+}
+
+.book-entry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}

@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>03-0｜统计基础：从一行数据到一个结论 / Statistics: from a data row to a conclusion – 我用做软件的方式学育种</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./chapter-03-1.html" rel="next">
+<link href="./chapter-02-4.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6774357434628ad73da102cd638e03af.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="sample.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">跳至主要内容</a>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="网站">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">我用做软件的方式学育种</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="展开或折叠导航栏" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./contents.html" aria-current="page"> 
+<span class="menu-text">全书目录</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+            <div id="quarto-search" class="" title="搜索"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="工具栏">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="展开或折叠侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="路径"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-01-0.html">第一篇 · 基础 / Part I · Foundations</a></li><li class="breadcrumb-item"><a href="./chapter-03-0.html">03 · 统计基础：从一行数据到一个结论 / Statistics: from a data row to a conclusion</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto" aria-label="区域">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">前言</span> <span class="course-nav-en" lang="en">Preface</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./contents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">00 · 目录</span> <span class="course-nav-en" lang="en">Contents</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label"><span class="course-nav-zh" lang="zh">第一篇 · 基础</span> <span class="course-nav-en" lang="en">Part I · Foundations</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-01-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-2-label"><span class="course-nav-zh" lang="zh">01 · 育种与遗传基础</span> <span class="course-nav-en" lang="en">Breeding and inheritance</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false" aria-label="展开或折叠此栏: 01 · 育种与遗传基础 / Breeding and inheritance">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-01-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">数量遗传学与遗传作用</span> <span class="course-nav-en" lang="en">Quantitative genetics and genetic effects</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-01-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传改良与杂交体系</span> <span class="course-nav-en" lang="en">Genetic improvement and crossbreeding systems</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-02-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-3-label"><span class="course-nav-zh" lang="zh">02 · 性状与类型</span> <span class="course-nav-en" lang="en">Traits and their types</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false" aria-label="展开或折叠此栏: 02 · 性状与类型 / Traits and their types">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">猪性状、EBV 与后代差异</span> <span class="course-nav-en" lang="en">Pig traits, EBVs, and progeny differences</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">阈值模型与分类性状</span> <span class="course-nav-en" lang="en">Threshold models and categorical traits</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-02-4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">重复记录与永久环境</span> <span class="course-nav-en" lang="en">Repeated records and permanent environment</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-03-0.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text" id="quarto-sidebar-section-4-label"><span class="course-nav-zh" lang="zh">03 · 统计基础：从一行数据到一个结论</span> <span class="course-nav-en" lang="en">Statistics: from a data row to a conclusion</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true" aria-label="展开或折叠此栏: 03 · 统计基础：从一行数据到一个结论 / Statistics: from a data row to a conclusion">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">均值向量与协方差矩阵详读</span> <span class="course-nav-en" lang="en">Mean vectors and covariance matrices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">相关系数与回归辨析详读</span> <span class="course-nav-en" lang="en">Correlation versus regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-03-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">均值方差标准差与数值校验详读</span> <span class="course-nav-en" lang="en">Mean, variance, standard deviation, and numerical checks</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-04-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-5-label"><span class="course-nav-zh" lang="zh">04 · 遗传参数与相关性</span> <span class="course-nav-en" lang="en">Genetic parameters and correlations</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="false" aria-label="展开或折叠此栏: 04 · 遗传参数与相关性 / Genetic parameters and correlations">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-04-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传力与遗传参数</span> <span class="course-nav-en" lang="en">Heritability and genetic parameters</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-04-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传相关与环境互作</span> <span class="course-nav-en" lang="en">Genetic correlation and environmental interaction</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-05-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-6-label"><span class="course-nav-zh" lang="zh">05 · 家系、系谱与近交</span> <span class="course-nav-en" lang="en">Families, pedigrees, and inbreeding</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="false" aria-label="展开或折叠此栏: 05 · 家系、系谱与近交 / Families, pedigrees, and inbreeding">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">家系、同胞与系谱术语</span> <span class="course-nav-en" lang="en">Families, siblings, and pedigree terms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">亲缘、共祖与近交计算</span> <span class="course-nav-en" lang="en">Relationship, kinship, and inbreeding calculations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-05-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">动物模型与系谱信息</span> <span class="course-nav-en" lang="en">Animal models and pedigree information</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-7-label"><span class="course-nav-zh" lang="zh">第二篇 · 遗传评估</span> <span class="course-nav-en" lang="en">Part II · Genetic Evaluation</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-06-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-8-label"><span class="course-nav-zh" lang="zh">06 · 育种值与准确度</span> <span class="course-nav-en" lang="en">Breeding values and accuracy</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="false" aria-label="展开或折叠此栏: 06 · 育种值与准确度 / Breeding values and accuracy">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-06-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">准确度与估计风险</span> <span class="course-nav-en" lang="en">Accuracy and estimation risk</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-06-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">PEV、可靠性与输出字段</span> <span class="course-nav-en" lang="en">PEV, reliability, and output fields</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-07-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-9-label"><span class="course-nav-zh" lang="zh">07 · 育种值计算与 BLUP</span> <span class="course-nav-en" lang="en">Breeding-value Calculation and BLUP</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="false" aria-label="展开或折叠此栏: 07 · 育种值计算与 BLUP / Breeding-value Calculation and BLUP">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">混合模型方程逐步推导</span> <span class="course-nav-en" lang="en">Mixed model equations step by step</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">REML 与方差组分</span> <span class="course-nav-en" lang="en">REML and variance components</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-07-5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">多性状评估与信息借用</span> <span class="course-nav-en" lang="en">Multi-trait evaluation and information borrowing</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-08-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-10-label"><span class="course-nav-zh" lang="zh">08 · 基因组与三类 BLUP</span> <span class="course-nav-en" lang="en">Genomics and three BLUP approaches</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-controls="quarto-sidebar-section-10" aria-expanded="false" aria-label="展开或折叠此栏: 08 · 基因组与三类 BLUP / Genomics and three BLUP approaches">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-10" aria-labelledby="quarto-sidebar-section-10-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">单步关系矩阵 H</span> <span class="course-nav-en" lang="en">The single-step relationship matrix H</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">基因组质控与样本身份</span> <span class="course-nav-en" lang="en">Genomic quality control and sample identity</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-08-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">参考群体与基因组选择</span> <span class="course-nav-en" lang="en">Reference populations and genomic selection</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-controls="quarto-sidebar-section-11" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-11-label"><span class="course-nav-zh" lang="zh">第三篇 · 育种决策</span> <span class="course-nav-en" lang="en">Part III · Breeding Decisions</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-11" aria-labelledby="quarto-sidebar-section-11-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./chapter-09-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-12-label"><span class="course-nav-zh" lang="zh">09 · 选择、选配与遗传进展</span> <span class="course-nav-en" lang="en">Selection, mating, and genetic progress</span></span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-controls="quarto-sidebar-section-12" aria-expanded="false" aria-label="展开或折叠此栏: 09 · 选择、选配与遗传进展 / Selection, mating, and genetic progress">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-12" aria-labelledby="quarto-sidebar-section-12-label" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">多性状选择：先定目标，再分配选择压力</span> <span class="course-nav-en" lang="en">Multi-trait selection: objectives and emphasis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">综合选择指数：一个分数如何连接多个 EBV</span> <span class="course-nav-en" lang="en">Selection indexes: connecting multiple EBVs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">同期群：先确认谁有资格直接比较</span> <span class="course-nav-en" lang="en">Contemporary groups: who can be directly compared?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">遗传联系：让不同组之间有一座桥</span> <span class="course-nav-en" lang="en">Connectedness: a bridge between groups</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-09-5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">选择反应：每代改良与每年改良</span> <span class="course-nav-en" lang="en">Selection response: per generation versus per year</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-controls="quarto-sidebar-section-13" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-13-label"><span class="course-nav-zh" lang="zh">附录</span> <span class="course-nav-en" lang="en">Appendices</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-13" aria-labelledby="quarto-sidebar-section-13-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-11-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">附录 A · 中英术语速查</span> <span class="course-nav-en" lang="en">Appendix A · Bilingual Glossary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-12-0.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="course-nav-zh" lang="zh">附录 B · 资料来源</span> <span class="course-nav-en" lang="en">Appendix B · Sources</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">本页目录</h2>
+   
+  <ul>
+  <li><a href="#总体样本与一行数据-population-sample-and-a-data-row" id="toc-总体样本与一行数据-population-sample-and-a-data-row" class="nav-link active" data-scroll-target="#总体样本与一行数据-population-sample-and-a-data-row">01 · 总体、样本与一行数据 / Population, sample, and a data row</a></li>
+  <li><a href="#先认符号-read-the-notation-first" id="toc-先认符号-read-the-notation-first" class="nav-link" data-scroll-target="#先认符号-read-the-notation-first">02 · 先认符号 / Read the notation first</a></li>
+  <li><a href="#均值中位数与众数-mean-median-and-mode" id="toc-均值中位数与众数-mean-median-and-mode" class="nav-link" data-scroll-target="#均值中位数与众数-mean-median-and-mode">03 · 均值、中位数与众数 / Mean, median, and mode</a></li>
+  <li><a href="#样本方差五步手算-sample-variance-in-five-steps" id="toc-样本方差五步手算-sample-variance-in-five-steps" class="nav-link" data-scroll-target="#样本方差五步手算-sample-variance-in-five-steps">04 · 样本方差：五步手算 / Sample variance in five steps</a>
+  <ul class="collapse">
+  <li><a href="#第一步先求均值-step-1-calculate-the-mean" id="toc-第一步先求均值-step-1-calculate-the-mean" class="nav-link" data-scroll-target="#第一步先求均值-step-1-calculate-the-mean">第一步：先求均值 / Step 1: calculate the mean</a></li>
+  <li><a href="#第二步每条记录减去均值-step-2-subtract-the-mean" id="toc-第二步每条记录减去均值-step-2-subtract-the-mean" class="nav-link" data-scroll-target="#第二步每条记录减去均值-step-2-subtract-the-mean">第二步：每条记录减去均值 / Step 2: subtract the mean</a></li>
+  <li><a href="#第三步把每个离差平方-step-3-square-each-deviation" id="toc-第三步把每个离差平方-step-3-square-each-deviation" class="nav-link" data-scroll-target="#第三步把每个离差平方-step-3-square-each-deviation">第三步：把每个离差平方 / Step 3: square each deviation</a></li>
+  <li><a href="#第四步加总得到离差平方和-step-4-sum-the-squared-deviations" id="toc-第四步加总得到离差平方和-step-4-sum-the-squared-deviations" class="nav-link" data-scroll-target="#第四步加总得到离差平方和-step-4-sum-the-squared-deviations">第四步：加总得到离差平方和 / Step 4: sum the squared deviations</a></li>
+  <li><a href="#第五步除以-n1-step-5-divide-by-n1" id="toc-第五步除以-n1-step-5-divide-by-n1" class="nav-link" data-scroll-target="#第五步除以-n1-step-5-divide-by-n1">第五步：除以 n−1 / Step 5: divide by n−1</a></li>
+  <li><a href="#用-python-和-r-对一次手算-check-the-hand-calculation-in-python-and-r" id="toc-用-python-和-r-对一次手算-check-the-hand-calculation-in-python-and-r" class="nav-link" data-scroll-target="#用-python-和-r-对一次手算-check-the-hand-calculation-in-python-and-r">用 Python 和 R 对一次手算 / Check the Hand Calculation in Python and R</a></li>
+  </ul></li>
+  <li><a href="#为什么除以-n1-why-divide-by-n1" id="toc-为什么除以-n1-why-divide-by-n1" class="nav-link" data-scroll-target="#为什么除以-n1-why-divide-by-n1">05 · 为什么除以 n−1 / Why divide by n−1?</a>
+  <ul class="collapse">
+  <li><a href="#用四种抽样结果看修正-see-the-correction-across-four-samples" id="toc-用四种抽样结果看修正-see-the-correction-across-four-samples" class="nav-link" data-scroll-target="#用四种抽样结果看修正-see-the-correction-across-four-samples">用四种抽样结果看修正 / See the correction across four samples</a></li>
+  <li><a href="#什么情况用-n-when-is-n-appropriate" id="toc-什么情况用-n-when-is-n-appropriate" class="nav-link" data-scroll-target="#什么情况用-n-when-is-n-appropriate">什么情况用 n / When is n appropriate?</a></li>
+  </ul></li>
+  <li><a href="#标准差把单位还原-standard-deviation-restore-the-units" id="toc-标准差把单位还原-standard-deviation-restore-the-units" class="nav-link" data-scroll-target="#标准差把单位还原-standard-deviation-restore-the-units">06 · 标准差：把单位还原 / Standard deviation: restore the units</a></li>
+  <li><a href="#分布极差与异常值-distribution-range-and-outliers" id="toc-分布极差与异常值-distribution-range-and-outliers" class="nav-link" data-scroll-target="#分布极差与异常值-distribution-range-and-outliers">07 · 分布、极差与异常值 / Distribution, range, and outliers</a></li>
+  <li><a href="#协方差两个性状一起偏离-covariance-two-traits-deviating-together" id="toc-协方差两个性状一起偏离-covariance-two-traits-deviating-together" class="nav-link" data-scroll-target="#协方差两个性状一起偏离-covariance-two-traits-deviating-together">08 · 协方差：两个性状一起偏离 / Covariance: two traits deviating together</a></li>
+  <li><a href="#相关系数消除单位再比较-correlation-compare-without-units" id="toc-相关系数消除单位再比较-correlation-compare-without-units" class="nav-link" data-scroll-target="#相关系数消除单位再比较-correlation-compare-without-units">09 · 相关系数：消除单位再比较 / Correlation: compare without units</a></li>
+  <li><a href="#回归预测与残差-regression-prediction-and-residuals" id="toc-回归预测与残差-regression-prediction-and-residuals" class="nav-link" data-scroll-target="#回归预测与残差-regression-prediction-and-residuals">10 · 回归、预测与残差 / Regression, prediction, and residuals</a></li>
+  <li><a href="#标准误均值有多不稳定-standard-error-how-variable-is-the-mean" id="toc-标准误均值有多不稳定-standard-error-how-variable-is-the-mean" class="nav-link" data-scroll-target="#标准误均值有多不稳定-standard-error-how-variable-is-the-mean">11 · 标准误：均值有多不稳定 / Standard error: how variable is the mean?</a></li>
+  <li><a href="#置信区间给均值一个区间-confidence-interval-a-range-for-the-mean" id="toc-置信区间给均值一个区间-confidence-interval-a-range-for-the-mean" class="nav-link" data-scroll-target="#置信区间给均值一个区间-confidence-interval-a-range-for-the-mean">12 · 置信区间：给均值一个区间 / Confidence interval: a range for the mean</a></li>
+  <li><a href="#数据质量与三种误差-data-quality-and-three-kinds-of-error" id="toc-数据质量与三种误差-data-quality-and-three-kinds-of-error" class="nav-link" data-scroll-target="#数据质量与三种误差-data-quality-and-three-kinds-of-error">13 · 数据质量与三种误差 / Data quality and three kinds of error</a></li>
+  <li><a href="#一页复盘-one-page-recap" id="toc-一页复盘-one-page-recap" class="nav-link" data-scroll-target="#一页复盘-one-page-recap">14 · 一页复盘 / One-page recap</a></li>
+  <li><a href="#用四个变化核对统计量-four-changes-that-check-the-statistics" id="toc-用四个变化核对统计量-four-changes-that-check-the-statistics" class="nav-link" data-scroll-target="#用四个变化核对统计量-four-changes-that-check-the-statistics">15 · 用四个变化核对统计量 / Four Changes That Check the Statistics</a></li>
+  <li><a href="#我的核对笔记-my-verification-notes" id="toc-我的核对笔记-my-verification-notes" class="nav-link" data-scroll-target="#我的核对笔记-my-verification-notes">我的核对笔记 / My Verification Notes</a></li>
+  <li><a href="#延伸阅读本地详解-further-reading-local-explanations" id="toc-延伸阅读本地详解-further-reading-local-explanations" class="nav-link" data-scroll-target="#延伸阅读本地详解-further-reading-local-explanations">延伸阅读：本地详解 / Further reading: local explanations</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="路径"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter-01-0.html">第一篇 · 基础 / Part I · Foundations</a></li><li class="breadcrumb-item"><a href="./chapter-03-0.html">03 · 统计基础：从一行数据到一个结论 / Statistics: from a data row to a conclusion</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">03-0｜统计基础：从一行数据到一个结论 / Statistics: from a data row to a conclusion</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><a href="./contents.html">目录 / Contents</a> · <a href="./chapter-02-0.html">上一章 / Previous</a> · <a href="./chapter-04-0.html">下一章 / Next</a></p>
+<p>我想弄清楚方差是怎么来的，就把四条日增重记录写成 700、800、800、900 g/day，先不用软件。<br>
+To understand where variance comes from, I start with four daily-gain records of 700, 800, 800, and 900 g/day and work without software first.</p>
+<p>用这四个数，我可以先看均值，再看每头偏离多少，最后把自己的手算和 Python 的输出对一遍。<br>
+With these four numbers I can find the mean, work out how far each pig deviates, and check the hand calculation against Python.</p>
+<p>数据行长得一样，背后却可能是不同的观测单位，所以我也会把统计计算和抽样条件一起记录下来。<br>
+Rows can look identical while representing different observation units, so I record sampling conditions together with the calculations.</p>
+<blockquote class="blockquote">
+<p><strong>先确认数据代表什么，再计算数字，最后判断这个数字能说明什么。</strong><br>
+<strong>Identify what the data represent, calculate the numbers, and then decide what they can support.</strong></p>
+</blockquote>
+<p>本章使用自拟的四头猪数据，把主要公式展开到可以手算的程度。<br>
+This chapter uses an original four-pig dataset and expands the main equations into calculations you can do by hand.</p>
+<p>第一次阅读可先学 01—07 节，再学两个性状的关系，最后学均值的不确定性。<br>
+On your first pass, read Sections 01–07, then relationships between two traits, and finally uncertainty in a mean.</p>
+<section id="总体样本与一行数据-population-sample-and-a-data-row" class="level2">
+<h2 class="anchored" data-anchor-id="总体样本与一行数据-population-sample-and-a-data-row">01 · 总体、样本与一行数据 / Population, sample, and a data row</h2>
+<p><strong>统计学</strong>研究如何收集、整理和分析数据，以及如何在信息不完整时作出有依据的判断。<br>
+<strong>Statistics</strong> studies how to collect, organize, and analyze data and make justified judgments with incomplete information.</p>
+<p><strong>描述统计</strong>总结已经看到的数据，<strong>统计推断</strong>尝试从样本了解更大的总体。<br>
+<strong>Descriptive statistics</strong> summarize observed data, while <strong>statistical inference</strong> uses a sample to learn about a larger population.</p>
+<ul>
+<li><p><strong>总体</strong>是你希望了解的全部对象，例如某猪场某批次全部测定猪。<br>
+A <strong>population</strong> contains all units you want to understand, such as all tested pigs in a specified farm batch.</p></li>
+<li><p><strong>样本</strong>是实际取得并用于分析的对象，例如从这批猪中随机抽取的 40 头。<br>
+A <strong>sample</strong> contains the units actually observed and analyzed, such as 40 pigs randomly selected from that batch.</p></li>
+<li><p><strong>变量</strong>是记录的属性，例如日增重、采食量、性别或场区。<br>
+A <strong>variable</strong> is a recorded attribute, such as daily gain, feed intake, sex, or farm site.</p></li>
+<li><p><strong>观测值</strong>是变量在某个对象上的具体取值，例如 A 猪日增重 700 g/day。<br>
+An <strong>observation value</strong> is a variable’s value for a unit, such as Pig A gaining 700 g/day.</p></li>
+<li><p><strong>观测单位</strong>是一条记录所对应的对象或事件，例如一头猪、一次称重或一窝产仔。<br>
+An <strong>observation unit</strong> is the unit or event represented by a record, such as a pig, a weighing, or a litter.</p></li>
+<li><p><strong>参数</strong>描述总体，例如总体均值 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>；<strong>统计量</strong>由样本算出，例如样本均值 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>x</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar{x}</annotation></semantics></math>。<br>
+A <strong>parameter</strong> describes a population, such as its mean <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>, whereas a <strong>statistic</strong> is calculated from a sample, such as its mean <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>x</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar{x}</annotation></semantics></math>.</p></li>
+</ul>
+<p><strong>估计量</strong>是计算未知参数的规则，<strong>估计值</strong>是把具体样本代入后得到的数字。<br>
+An <strong>estimator</strong> is a rule for estimating an unknown parameter, and an <strong>estimate</strong> is the number obtained from a particular sample.</p>
+<p>100 头母猪各记录 5 胎得到 500 条记录，但仍然只有 100 头母猪。<br>
+Recording five litters from each of 100 sows produces 500 records but still only 100 sows.</p>
+<p><strong>独立</strong>表示知道一条观测的信息不会改变另一条观测的概率分布，同一母猪的多胎记录通常不满足这一条件。<br>
+<strong>Independence</strong> means information about one observation does not change another observation’s probability distribution, a condition usually violated by repeated litters from one sow.</p>
+<p><strong>同分布</strong>表示观测来自相同的概率分布，不表示它们的数值必须相同。<br>
+<strong>Identically distributed</strong> means observations share the same probability distribution, not that their values must be identical.</p>
+<p>随机抽样让入样机制可解释，但只记录优秀猪会让样本偏离你原本想了解的总体。<br>
+Random sampling makes sample inclusion interpretable, whereas recording only outstanding pigs can make the sample unrepresentative of the intended population.</p>
+</section>
+<section id="先认符号-read-the-notation-first" class="level2">
+<h2 class="anchored" data-anchor-id="先认符号-read-the-notation-first">02 · 先认符号 / Read the notation first</h2>
+<ul>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> 是样本条数，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mi>i</mi></msub><annotation encoding="application/x-tex">x_i</annotation></semantics></math> 是第 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math> 条记录，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">i=1,\ldots,n</annotation></semantics></math> 是记录编号。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> is the sample size, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mi>i</mi></msub><annotation encoding="application/x-tex">x_i</annotation></semantics></math> is record <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">i=1,\ldots,n</annotation></semantics></math> indexes the records.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>∑</mo><annotation encoding="application/x-tex">\sum</annotation></semantics></math> 表示逐项相加，例如 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mn>4</mn></msubsup><msub><mi>x</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msub><mi>x</mi><mn>2</mn></msub><mo>+</mo><msub><mi>x</mi><mn>3</mn></msub><mo>+</mo><msub><mi>x</mi><mn>4</mn></msub></mrow><annotation encoding="application/x-tex">\sum_{i=1}^{4}x_i=x_1+x_2+x_3+x_4</annotation></semantics></math>。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>∑</mo><annotation encoding="application/x-tex">\sum</annotation></semantics></math> means adding terms, for example <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mn>4</mn></msubsup><msub><mi>x</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msub><mi>x</mi><mn>2</mn></msub><mo>+</mo><msub><mi>x</mi><mn>3</mn></msub><mo>+</mo><msub><mi>x</mi><mn>4</mn></msub></mrow><annotation encoding="application/x-tex">\sum_{i=1}^{4}x_i=x_1+x_2+x_3+x_4</annotation></semantics></math>.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>x</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar{x}</annotation></semantics></math> 读作“x 的均值”，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">x_i-\bar{x}</annotation></semantics></math> 表示第 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math> 条记录与均值的差。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>x</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar{x}</annotation></semantics></math> is read as “x bar,” and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">x_i-\bar{x}</annotation></semantics></math> is the difference between record <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math> and the mean.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>a</mi><mn>2</mn></msup><annotation encoding="application/x-tex">a^2</annotation></semantics></math> 是 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>×</mo><mi>a</mi></mrow><annotation encoding="application/x-tex">a\times a</annotation></semantics></math>，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mi>a</mi></msqrt><annotation encoding="application/x-tex">\sqrt{a}</annotation></semantics></math> 是平方根，计算时先处理括号再做平方。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>a</mi><mn>2</mn></msup><annotation encoding="application/x-tex">a^2</annotation></semantics></math> means <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>×</mo><mi>a</mi></mrow><annotation encoding="application/x-tex">a\times a</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mi>a</mi></msqrt><annotation encoding="application/x-tex">\sqrt{a}</annotation></semantics></math> is a square root, and parentheses are evaluated before squaring.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>s</mi><mn>2</mn></msup><annotation encoding="application/x-tex">s^2</annotation></semantics></math> 和 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math> 通常表示样本方差和样本标准差，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>σ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\sigma^2</annotation></semantics></math> 和 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>σ</mi><annotation encoding="application/x-tex">\sigma</annotation></semantics></math> 通常表示总体对应量。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>s</mi><mn>2</mn></msup><annotation encoding="application/x-tex">s^2</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math> usually denote sample variance and sample standard deviation, while <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>σ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\sigma^2</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>σ</mi><annotation encoding="application/x-tex">\sigma</annotation></semantics></math> denote their population counterparts.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>y</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{y}</annotation></semantics></math> 读作“y 的预测值”，帽子符号提醒你它是估计或预测的结果。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>y</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{y}</annotation></semantics></math> is read as “y hat,” with the hat indicating an estimate or prediction.</p></li>
+</ul>
+</section>
+<section id="均值中位数与众数-mean-median-and-mode" class="level2">
+<h2 class="anchored" data-anchor-id="均值中位数与众数-mean-median-and-mode">03 · 均值、中位数与众数 / Mean, median, and mode</h2>
+<p>假设四头猪的日增重为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mn>700</mn><mo>,</mo><mn>800</mn><mo>,</mo><mn>800</mn><mo>,</mo><mn>900</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">x=[700,800,800,900]</annotation></semantics></math>，单位统一为 g/day。<br>
+Suppose four pigs have daily gains <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mn>700</mn><mo>,</mo><mn>800</mn><mo>,</mo><mn>800</mn><mo>,</mo><mn>900</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">x=[700,800,800,900]</annotation></semantics></math>, all measured in g/day.</p>
+<p><strong>算术均值</strong>把总量平均分给每条记录，用来描述数据中心。<br>
+The <strong>arithmetic mean</strong> divides the total equally among records to describe the center.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>=</mo><mfrac><mrow><mo>∑</mo><msub><mi>x</mi><mi>i</mi></msub></mrow><mi>n</mi></mfrac><mo>=</mo><mfrac><mrow><mn>700</mn><mo>+</mo><mn>800</mn><mo>+</mo><mn>800</mn><mo>+</mo><mn>900</mn></mrow><mn>4</mn></mfrac><mo>=</mo><mfrac><mn>3200</mn><mn>4</mn></mfrac><mo>=</mo><mn>800</mn><mspace width="0.222em"></mspace><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow></mrow><annotation encoding="application/x-tex">
+\bar{x}=\frac{\sum x_i}{n}
+=\frac{700+800+800+900}{4}
+=\frac{3200}{4}=800\ \mathrm{g/day}
+</annotation></semantics></math></p>
+<p><strong>中位数</strong>是排序后的中间位置，奇数条取中间一条，偶数条取中间两条的均值。<br>
+The <strong>median</strong> is the center of the sorted values, using the middle value for an odd count and the mean of the two middle values for an even count.</p>
+<p>本例中间两条都是 800，所以中位数为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>800</mn><mo>+</mo><mn>800</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn><mo>=</mo><mn>800</mn></mrow><annotation encoding="application/x-tex">(800+800)/2=800</annotation></semantics></math>。<br>
+Both middle values are 800, so the median is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>800</mn><mo>+</mo><mn>800</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn><mo>=</mo><mn>800</mn></mrow><annotation encoding="application/x-tex">(800+800)/2=800</annotation></semantics></math>.</p>
+<p><strong>众数</strong>是出现次数最多的值，本例为 800，数据也可能有多个众数。<br>
+The <strong>mode</strong> is the most frequent value, which is 800 here, and a dataset may have multiple modes.</p>
+<p>若最后一条从 900 改为 1700，均值变成 1000，而中位数仍为 800。<br>
+If the last value changes from 900 to 1700, the mean becomes 1000 while the median remains 800.</p>
+<p>这说明均值容易受极端值影响，中位数对这种改动更稳健。<br>
+This shows that the mean is sensitive to extreme values, whereas the median is more robust to this change.</p>
+<p><strong>加权均值</strong>让不同数值按其代表的数量参与平均，权重之和作为分母。<br>
+A <strong>weighted mean</strong> averages values according to the quantities they represent, using the sum of weights as its denominator.</p>
+<p>若 A 组 2 头猪均值为 700，B 组 8 头猪均值为 900，合并均值为 860，而不是两个组均值直接平均所得的 800。<br>
+If Group A has two pigs averaging 700 and Group B has eight averaging 900, their combined mean is 860 rather than the unweighted average of group means, 800.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">b</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi></mrow></msub><mo>=</mo><mfrac><mrow><mn>2</mn><mo>×</mo><mn>700</mn><mo>+</mo><mn>8</mn><mo>×</mo><mn>900</mn></mrow><mrow><mn>2</mn><mo>+</mo><mn>8</mn></mrow></mfrac><mo>=</mo><mn>860</mn></mrow><annotation encoding="application/x-tex">
+\bar{x}_{\mathrm{combined}}=\frac{2\times700+8\times900}{2+8}=860
+</annotation></semantics></math></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda351.htm">NIST 位置统计量</a>支持本节定义，猪群数值为本教程自拟。<br>
+<a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda351.htm">NIST’s measures of location</a> supports these definitions, while the pig examples are original to this tutorial.</p>
+</section>
+<section id="样本方差五步手算-sample-variance-in-five-steps" class="level2">
+<h2 class="anchored" data-anchor-id="样本方差五步手算-sample-variance-in-five-steps">04 · 样本方差：五步手算 / Sample variance in five steps</h2>
+<p><strong>方差</strong>用记录偏离均值的平方来描述分散程度，偏离越大时贡献越大。<br>
+<strong>Variance</strong> describes spread using squared deviations from the mean, giving larger deviations more weight.</p>
+<section id="第一步先求均值-step-1-calculate-the-mean" class="level3">
+<h3 class="anchored" data-anchor-id="第一步先求均值-step-1-calculate-the-mean">第一步：先求均值 / Step 1: calculate the mean</h3>
+<p>沿用四头猪的数据，均值已经算得 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>800</mn></mrow><annotation encoding="application/x-tex">\bar{x}=800</annotation></semantics></math>。<br>
+Using the same four pigs, we already have <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>800</mn></mrow><annotation encoding="application/x-tex">\bar{x}=800</annotation></semantics></math>.</p>
+</section>
+<section id="第二步每条记录减去均值-step-2-subtract-the-mean" class="level3">
+<h3 class="anchored" data-anchor-id="第二步每条记录减去均值-step-2-subtract-the-mean">第二步：每条记录减去均值 / Step 2: subtract the mean</h3>
+<p><strong>离差</strong>就是观测值减去均值，保留正负号以表示方向。<br>
+A <strong>deviation</strong> is an observed value minus the mean, retaining its sign to show direction.</p>
+<ul>
+<li><p>A 猪：<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>700</mn><mo>−</mo><mn>800</mn><mo>=</mo><mi>−</mi><mn>100</mn></mrow><annotation encoding="application/x-tex">700-800=-100</annotation></semantics></math>。<br>
+Pig A: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>700</mn><mo>−</mo><mn>800</mn><mo>=</mo><mi>−</mi><mn>100</mn></mrow><annotation encoding="application/x-tex">700-800=-100</annotation></semantics></math>.</p></li>
+<li><p>B 猪：<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>800</mn><mo>−</mo><mn>800</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">800-800=0</annotation></semantics></math>。<br>
+Pig B: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>800</mn><mo>−</mo><mn>800</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">800-800=0</annotation></semantics></math>.</p></li>
+<li><p>C 猪：<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>800</mn><mo>−</mo><mn>800</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">800-800=0</annotation></semantics></math>。<br>
+Pig C: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>800</mn><mo>−</mo><mn>800</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">800-800=0</annotation></semantics></math>.</p></li>
+<li><p>D 猪：<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>900</mn><mo>−</mo><mn>800</mn><mo>=</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">900-800=100</annotation></semantics></math>。<br>
+Pig D: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>900</mn><mo>−</mo><mn>800</mn><mo>=</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">900-800=100</annotation></semantics></math>.</p></li>
+</ul>
+<p>离差之和是 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>100</mn><mo>+</mo><mn>0</mn><mo>+</mo><mn>0</mn><mo>+</mo><mn>100</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">-100+0+0+100=0</annotation></semantics></math>，直接相加会让正负抵消，不能衡量分散。<br>
+The deviations sum to <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>100</mn><mo>+</mo><mn>0</mn><mo>+</mo><mn>0</mn><mo>+</mo><mn>100</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">-100+0+0+100=0</annotation></semantics></math>, so adding them directly cancels their signs and fails to measure spread.</p>
+</section>
+<section id="第三步把每个离差平方-step-3-square-each-deviation" class="level3">
+<h3 class="anchored" data-anchor-id="第三步把每个离差平方-step-3-square-each-deviation">第三步：把每个离差平方 / Step 3: square each deviation</h3>
+<p>四个平方分别为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>100</mn><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mo>=</mo><mn>10</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">(-100)^2=10{,}000</annotation></semantics></math>、<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>0</mn><mn>2</mn></msup><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0^2=0</annotation></semantics></math>、<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>0</mn><mn>2</mn></msup><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0^2=0</annotation></semantics></math>、<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>100</mn><mn>2</mn></msup><mo>=</mo><mn>10</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">100^2=10{,}000</annotation></semantics></math>。<br>
+The four squares are <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>100</mn><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mo>=</mo><mn>10</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">(-100)^2=10{,}000</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>0</mn><mn>2</mn></msup><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0^2=0</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>0</mn><mn>2</mn></msup><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0^2=0</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>100</mn><mn>2</mn></msup><mo>=</mo><mn>10</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">100^2=10{,}000</annotation></semantics></math>.</p>
+<p>平方让正负离差都成为非负贡献，单位同时变成 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(g/day)^2</annotation></semantics></math>。<br>
+Squaring makes both positive and negative deviations contribute nonnegative amounts and changes the units to <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(g/day)^2</annotation></semantics></math>.</p>
+</section>
+<section id="第四步加总得到离差平方和-step-4-sum-the-squared-deviations" class="level3">
+<h3 class="anchored" data-anchor-id="第四步加总得到离差平方和-step-4-sum-the-squared-deviations">第四步：加总得到离差平方和 / Step 4: sum the squared deviations</h3>
+<p><strong>离差平方和 SS</strong>只是平方偏离的总量，此时还不是方差。<br>
+The <strong>sum of squared deviations (SS)</strong> is the total squared departure and is not yet a variance.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>S</mi><mi>x</mi></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mn>4</mn></munderover><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mo>=</mo><mn>10</mn><mo>,</mo><mn>000</mn><mo>+</mo><mn>0</mn><mo>+</mo><mn>0</mn><mo>+</mo><mn>10</mn><mo>,</mo><mn>000</mn><mo>=</mo><mn>20</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">
+SS_x=\sum_{i=1}^{4}(x_i-\bar{x})^2
+=10{,}000+0+0+10{,}000=20{,}000
+</annotation></semantics></math></p>
+</section>
+<section id="第五步除以-n1-step-5-divide-by-n1" class="level3">
+<h3 class="anchored" data-anchor-id="第五步除以-n1-step-5-divide-by-n1">第五步：除以 n−1 / Step 5: divide by n−1</h3>
+<p>用样本均值估计总体均值时，通常用 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n-1</annotation></semantics></math> 修正平方和的平均方式。<br>
+When the sample mean estimates the population mean, the usual variance estimator divides the squared deviations by <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n-1</annotation></semantics></math>.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>s</mi><mn>2</mn></msup><mo>=</mo><mfrac><mrow><mi>S</mi><msub><mi>S</mi><mi>x</mi></msub></mrow><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></mfrac><mo>=</mo><mfrac><mrow><mn>20</mn><mo>,</mo><mn>000</mn></mrow><mrow><mn>4</mn><mo>−</mo><mn>1</mn></mrow></mfrac><mo>=</mo><mfrac><mrow><mn>20</mn><mo>,</mo><mn>000</mn></mrow><mn>3</mn></mfrac><mo>≈</mo><mn>6</mn><mo>,</mo><mn>666.67</mn><mspace width="0.222em"></mspace><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">
+s^2=\frac{SS_x}{n-1}
+=\frac{20{,}000}{4-1}
+=\frac{20{,}000}{3}
+\approx6{,}666.67\ (\mathrm{g/day})^2
+</annotation></semantics></math></p>
+<p>这个数字描述原始日增重记录的分散，不能直接当作加性遗传方差。<br>
+This number describes variation in the raw daily-gain records and cannot directly be treated as additive genetic variance.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/03-0-sample-variance-steps.png" class="img-fluid figure-img"></p>
+<figcaption>样本方差逐步计算 / Sample variance calculation</figcaption>
+</figure>
+</div>
+<p><strong>图 03-0A</strong>　四头猪的平均日增重为 800 g/day，四个离差的平方加总得到 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>S</mi><mi>x</mi></msub><mo>=</mo><mn>20</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">SS_x=20{,}000</annotation></semantics></math>，样本方差为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20</mn><mo>,</mo><mn>000</mn><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>4</mn><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>≈</mo><mn>6</mn><mo>,</mo><mn>666.67</mn><mspace width="0.167em"></mspace><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">20{,}000/(4-1)\approx6{,}666.67\,(\mathrm{g/day})^2</annotation></semantics></math>。<br>
+<strong>Figure 03-0A</strong>　The four pigs have a mean daily gain of 800 g/day and squared deviations summing to <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>S</mi><mi>x</mi></msub><mo>=</mo><mn>20</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">SS_x=20{,}000</annotation></semantics></math>, which gives sample variance <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20</mn><mo>,</mo><mn>000</mn><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>4</mn><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>≈</mo><mn>6</mn><mo>,</mo><mn>666.67</mn><mspace width="0.167em"></mspace><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">20{,}000/(4-1)\approx6{,}666.67\,(\mathrm{g/day})^2</annotation></semantics></math>.</p>
+</section>
+<section id="用-python-和-r-对一次手算-check-the-hand-calculation-in-python-and-r" class="level3">
+<h3 class="anchored" data-anchor-id="用-python-和-r-对一次手算-check-the-hand-calculation-in-python-and-r">用 Python 和 R 对一次手算 / Check the Hand Calculation in Python and R</h3>
+<p>我会用 Python 标准库把四个输入和输出一起留底，这样再看到其他程序的结果时，就能用同一组数对照。<br>
+I use the Python standard library to keep the four inputs and their outputs together, so I can compare other programs on the same data.</p>
+<p>这组数据的均值与标准差以 g/day 计量，样本方差的单位是 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(\mathrm{g/day})^2</annotation></semantics></math>。<br>
+In this dataset, the mean and standard deviation are in g/day, and sample variance is in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(\mathrm{g/day})^2</annotation></semantics></math>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statistics <span class="im">import</span> mean, variance, stdev</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>records <span class="op">=</span> [<span class="dv">700</span>, <span class="dv">800</span>, <span class="dv">800</span>, <span class="dv">900</span>]</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'mean=</span><span class="sc">{</span>mean(records)<span class="sc">:.2f}</span><span class="ss">, variance=</span><span class="sc">{</span>variance(records)<span class="sc">:.2f}</span><span class="ss">, sd=</span><span class="sc">{</span>stdev(records)<span class="sc">:.2f}</span><span class="ss">'</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>同一组记录在基础 R 里可以用 <code>mean()</code>、<code>var()</code> 和 <code>sd()</code> 复算，三个结果可对照下方的共同输出。<br>
+In base R, <code>mean()</code>, <code>var()</code>, and <code>sd()</code> reproduce the three numbers in the shared output below.</p>
+<p>这里 <code>var()</code> 用 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n-1</annotation></semantics></math> 作分母，<code>sd()</code> 是这个样本方差的平方根。<br>
+Here <code>var()</code> uses <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n-1</annotation></semantics></math> in the denominator, and <code>sd()</code> takes the square root of that sample variance.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>records <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">700</span>, <span class="dv">800</span>, <span class="dv">800</span>, <span class="dv">900</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"mean=%.2f, variance=%.2f, sd=%.2f</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(records), <span class="fu">var</span>(records), <span class="fu">sd</span>(records)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<p>复算输出如下，两个小数位是显示格式。<br>
+The reproduced output is shown below, with two decimals used for display.</p>
+<pre class="text"><code>mean=800.00, variance=6666.67, sd=81.65</code></pre>
+<p>同一输入若改用总体方差函数，分母就从 3 变为 4，结果是 5,000。<br>
+Using a population-variance function on the same inputs changes the denominator from 3 to 4 and yields 5,000.</p>
+</section>
+</section>
+<section id="为什么除以-n1-why-divide-by-n1" class="level2">
+<h2 class="anchored" data-anchor-id="为什么除以-n1-why-divide-by-n1">05 · 为什么除以 n−1 / Why divide by n−1?</h2>
+<p><strong>自由度</strong>是满足已有约束后还能独立变化的数量，本例约束是所有离差之和必须为 0。<br>
+<strong>Degrees of freedom</strong> count how many quantities can vary independently after constraints, with deviations here constrained to sum to zero.</p>
+<p>四个离差中只要前三个已确定，最后一个就必须等于前三个之和的相反数。<br>
+Once the first three of four deviations are fixed, the last must be the negative of their sum.</p>
+<p>因此剩下 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mo>−</mo><mn>1</mn><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">4-1=3</annotation></semantics></math> 个自由度，这不表示删掉一头猪或忽略一条记录。<br>
+This leaves <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mo>−</mo><mn>1</mn><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">4-1=3</annotation></semantics></math> degrees of freedom and does not mean deleting a pig or ignoring a record.</p>
+<p>样本均值根据当前样本调整位置，通常比真实总体均值更贴近这批数据，因此用它算出的平方偏离会偏小。<br>
+The sample mean adapts to the current sample and is typically closer to its values than the true population mean, making the resulting squared deviations too small on average.</p>
+<section id="用四种抽样结果看修正-see-the-correction-across-four-samples" class="level3">
+<h3 class="anchored" data-anchor-id="用四种抽样结果看修正-see-the-correction-across-four-samples">用四种抽样结果看修正 / See the correction across four samples</h3>
+<p>另设一个只有数值 0 和 2、两者概率各为一半的教学总体，它的均值为 1、总体方差为 1。<br>
+Consider a separate teaching population taking values 0 and 2 with equal probability, with mean 1 and population variance 1.</p>
+<p>独立有放回抽取两个值时，下面四种有序样本概率相同。<br>
+Two independent draws with replacement produce the following four equally likely ordered samples.</p>
+<ul>
+<li><p>样本 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0,0)</annotation></semantics></math> 的均值为 0，离差平方和为 0。<br>
+Sample <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0,0)</annotation></semantics></math> has mean 0 and squared-deviation sum 0.</p></li>
+<li><p>样本 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0,2)</annotation></semantics></math> 的均值为 1，离差平方和为 2。<br>
+Sample <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0,2)</annotation></semantics></math> has mean 1 and squared-deviation sum 2.</p></li>
+<li><p>样本 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(2,0)</annotation></semantics></math> 的均值为 1，离差平方和为 2。<br>
+Sample <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(2,0)</annotation></semantics></math> has mean 1 and squared-deviation sum 2.</p></li>
+<li><p>样本 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(2,2)</annotation></semantics></math> 的均值为 2，离差平方和为 0。<br>
+Sample <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(2,2)</annotation></semantics></math> has mean 2 and squared-deviation sum 0.</p></li>
+</ul>
+<p>若都除以 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">n=2</annotation></semantics></math>，四个方差结果为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0,1,1,0</annotation></semantics></math>，长期平均为 0.5，小于真实方差 1。<br>
+Dividing by <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">n=2</annotation></semantics></math> gives variance results <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0,1,1,0</annotation></semantics></math>, whose long-run average is 0.5, below the true variance of 1.</p>
+<p>若都除以 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n-1=1</annotation></semantics></math>，结果为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0,2,2,0</annotation></semantics></math>，长期平均恰好等于真实方差 1。<br>
+Dividing by <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>−</mo><mn>1</mn><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n-1=1</annotation></semantics></math> gives <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0,2,2,0</annotation></semantics></math>, whose long-run average equals the true variance of 1.</p>
+<p><strong>无偏</strong>表示按同一机制反复抽样时估计值的平均等于真实参数，不表示每次估计都准确。<br>
+<strong>Unbiased</strong> means estimates average to the true parameter under repeated sampling by the same mechanism, not that every estimate is accurate.</p>
+<p>对独立同分布且具有有限方差的样本，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>s</mi><mn>2</mn></msup><annotation encoding="application/x-tex">s^2</annotation></semantics></math> 的这一无偏性质不要求总体服从正态分布。<br>
+For independent, identically distributed observations with finite variance, this unbiasedness of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>s</mi><mn>2</mn></msup><annotation encoding="application/x-tex">s^2</annotation></semantics></math> does not require a normal population.</p>
+</section>
+<section id="什么情况用-n-when-is-n-appropriate" class="level3">
+<h3 class="anchored" data-anchor-id="什么情况用-n-when-is-n-appropriate">什么情况用 n / When is n appropriate?</h3>
+<p>若四头猪就是你要描述的完整总体，计算该总体的平均平方偏离时用 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">n=4</annotation></semantics></math>，结果为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20</mn><mo>,</mo><mn>000</mn><mi>/</mi><mn>4</mn><mo>=</mo><mn>5</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">20{,}000/4=5{,}000</annotation></semantics></math>。<br>
+If the four pigs are the entire population being described, their population mean squared deviation uses <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">n=4</annotation></semantics></math>, giving <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20</mn><mo>,</mo><mn>000</mn><mi>/</mi><mn>4</mn><mo>=</mo><mn>5</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">20{,}000/4=5{,}000</annotation></semantics></math>.</p>
+<p>若真实总体均值已经由外部准确给定，围绕这个已知均值估计方差也有使用 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> 的情况，所以应先明确估计问题。<br>
+If the true population mean is known exactly from outside the sample, estimating variance around that known mean can also use <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>, so define the estimation problem first.</p>
+<p>只有一个观测时，样本方差的分母为 0，因此无法估计，而不是“方差一定为 0”。<br>
+With one observation, the sample-variance denominator is zero, so variance cannot be estimated rather than being necessarily zero.</p>
+<p><a href="https://docs.python.org/3/library/statistics.html">Python 官方统计文档</a>分别提供 <code>variance</code> 与 <code>pvariance</code>，对应样本方差与总体方差的常见计算约定。<br>
+The <a href="https://docs.python.org/3/library/statistics.html">official Python statistics documentation</a> distinguishes <code>variance</code> from <code>pvariance</code>, reflecting the usual sample and population variance conventions.</p>
+</section>
+</section>
+<section id="标准差把单位还原-standard-deviation-restore-the-units" class="level2">
+<h2 class="anchored" data-anchor-id="标准差把单位还原-standard-deviation-restore-the-units">06 · 标准差：把单位还原 / Standard deviation: restore the units</h2>
+<p><strong>标准差 SD</strong>是方差的平方根，用原始单位表达分散程度。<br>
+<strong>Standard deviation (SD)</strong> is the square root of variance and expresses spread in the original units.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><msqrt><msup><mi>s</mi><mn>2</mn></msup></msqrt><mo>=</mo><msqrt><mrow><mn>20</mn><mo>,</mo><mn>000</mn><mi>/</mi><mn>3</mn></mrow></msqrt><mo>≈</mo><mn>81.65</mn><mspace width="0.222em"></mspace><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow></mrow><annotation encoding="application/x-tex">
+s=\sqrt{s^2}=\sqrt{20{,}000/3}\approx81.65\ \mathrm{g/day}
+</annotation></semantics></math></p>
+<p>81.65 g/day 是对分散程度的概括，不表示每头猪恰好偏离均值 81.65，也不是 81.65%。<br>
+The 81.65 g/day summarizes spread and does not mean every pig differs from the mean by exactly 81.65 or by 81.65%.</p>
+<p>所有记录相同时标准差为 0，记录越分散时标准差通常越大。<br>
+Standard deviation is zero when all records are identical and generally increases as records spread out.</p>
+<p>标准差本身不要求正态分布，但用“均值加减一个标准差”推算固定覆盖比例需要额外分布条件。<br>
+Standard deviation itself does not require normality, but assigning a fixed coverage proportion to one standard deviation around a mean requires distributional assumptions.</p>
+<p>虽然 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>s</mi><mn>2</mn></msup><annotation encoding="application/x-tex">s^2</annotation></semantics></math> 在上述抽样条件下无偏，开平方后的 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math> 通常不是总体标准差的无偏估计。<br>
+Although <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>s</mi><mn>2</mn></msup><annotation encoding="application/x-tex">s^2</annotation></semantics></math> is unbiased under the stated sampling conditions, its square root <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math> is generally not unbiased for the population standard deviation.</p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm">NIST 离散程度</a>进一步区分方差、标准差及其他分散指标。<br>
+<a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm">NIST’s measures of scale</a> distinguishes variance, standard deviation, and other measures of spread.</p>
+</section>
+<section id="分布极差与异常值-distribution-range-and-outliers" class="level2">
+<h2 class="anchored" data-anchor-id="分布极差与异常值-distribution-range-and-outliers">07 · 分布、极差与异常值 / Distribution, range, and outliers</h2>
+<p><strong>分布</strong>描述不同取值出现得有多频繁，包括中心、分散和形状。<br>
+A <strong>distribution</strong> describes how frequently different values occur, including its center, spread, and shape.</p>
+<p><strong>直方图</strong>把数值划入区间并统计各区间频数，区间宽度会影响看到的形状。<br>
+A <strong>histogram</strong> groups values into bins and counts their frequencies, with bin width affecting the visible shape.</p>
+<p><strong>正态分布</strong>是左右对称的钟形概率分布，不能因为数据有均值和标准差就认定它是正态的。<br>
+A <strong>normal distribution</strong> is a symmetric, bell-shaped probability distribution, and having a mean and standard deviation does not establish normality.</p>
+<p><strong>偏态</strong>表示分布不对称，向高值延伸较长尾部称为右偏。<br>
+<strong>Skewness</strong> describes distributional asymmetry, with a longer tail toward high values called right skew.</p>
+<p><strong>极差</strong>等于最大值减最小值，本例为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>900</mn><mo>−</mo><mn>700</mn><mo>=</mo><mn>200</mn></mrow><annotation encoding="application/x-tex">900-700=200</annotation></semantics></math> g/day，但它只使用两个端点。<br>
+The <strong>range</strong> is the maximum minus the minimum, here <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>900</mn><mo>−</mo><mn>700</mn><mo>=</mo><mn>200</mn></mrow><annotation encoding="application/x-tex">900-700=200</annotation></semantics></math> g/day, but uses only the two endpoints.</p>
+<p><strong>异常值</strong>是相对其他记录显得特别不同的值，它可能来自录入错误，也可能是真实个体差异。<br>
+An <strong>outlier</strong> is unusually different from other records and may reflect an entry error or real individual variation.</p>
+<p>先核对单位、身份和测定条件，再决定如何处理异常值，不能仅因它“不好看”就删除。<br>
+Check units, identity, and measurement conditions before handling an outlier, rather than deleting it merely because it looks inconvenient.</p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/ppc/section1/ppc131.htm">NIST 分布概念</a>提供位置、分散和形状的基本框架。<br>
+<a href="https://www.itl.nist.gov/div898/handbook/ppc/section1/ppc131.htm">NIST’s distribution overview</a> provides the framework of location, spread, and shape.</p>
+</section>
+<section id="协方差两个性状一起偏离-covariance-two-traits-deviating-together" class="level2">
+<h2 class="anchored" data-anchor-id="协方差两个性状一起偏离-covariance-two-traits-deviating-together">08 · 协方差：两个性状一起偏离 / Covariance: two traits deviating together</h2>
+<p>给四头猪增加日采食量 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>，每一对数值都必须来自同一头猪。<br>
+Add daily feed intake <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> for each pig, keeping each pair of values matched to the same animal.</p>
+<ul>
+<li><p>A 猪：<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>700</mn></mrow><annotation encoding="application/x-tex">x=700</annotation></semantics></math> g/day，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">y=2</annotation></semantics></math> kg/day。<br>
+Pig A: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>700</mn></mrow><annotation encoding="application/x-tex">x=700</annotation></semantics></math> g/day and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">y=2</annotation></semantics></math> kg/day.</p></li>
+<li><p>B 猪：<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>800</mn></mrow><annotation encoding="application/x-tex">x=800</annotation></semantics></math> g/day，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">y=3</annotation></semantics></math> kg/day。<br>
+Pig B: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>800</mn></mrow><annotation encoding="application/x-tex">x=800</annotation></semantics></math> g/day and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">y=3</annotation></semantics></math> kg/day.</p></li>
+<li><p>C 猪：<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>800</mn></mrow><annotation encoding="application/x-tex">x=800</annotation></semantics></math> g/day，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">y=4</annotation></semantics></math> kg/day。<br>
+Pig C: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>800</mn></mrow><annotation encoding="application/x-tex">x=800</annotation></semantics></math> g/day and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">y=4</annotation></semantics></math> kg/day.</p></li>
+<li><p>D 猪：<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>900</mn></mrow><annotation encoding="application/x-tex">x=900</annotation></semantics></math> g/day，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">y=3</annotation></semantics></math> kg/day。<br>
+Pig D: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>900</mn></mrow><annotation encoding="application/x-tex">x=900</annotation></semantics></math> g/day and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">y=3</annotation></semantics></math> kg/day.</p></li>
+</ul>
+<p><strong>协方差</strong>把同一头猪两个性状的离差相乘，再汇总这些乘积。<br>
+<strong>Covariance</strong> multiplies deviations of two traits within each pig and summarizes those products.</p>
+<p>同向离差产生正乘积，反向离差产生负乘积，任一离差为 0 时乘积为 0。<br>
+Deviations in the same direction produce a positive product, opposite directions a negative product, and any zero deviation a zero product.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>800</mn><mo>,</mo><mspace width="2.0em"></mspace><mover><mi>y</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">
+\bar{x}=800,\qquad \bar{y}=3
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>100</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>100</mn><mo stretchy="false" form="postfix">]</mo><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><mover><mi>y</mi><mo accent="true">‾</mo></mover><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>1</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">
+x_i-\bar{x}=[-100,0,0,100],\qquad
+y_i-\bar{y}=[-1,0,1,0]
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>S</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>100</mn><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mn>0</mn><mo>×</mo><mn>0</mn><mo>+</mo><mn>0</mn><mo>×</mo><mn>1</mn><mo>+</mo><mn>100</mn><mo>×</mo><mn>0</mn><mo>=</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">
+SS_{xy}=(-100)(-1)+0\times0+0\times1+100\times0=100
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mo>=</mo><mfrac><mrow><mi>S</mi><msub><mi>S</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub></mrow><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></mfrac><mo>=</mo><mfrac><mn>100</mn><mn>3</mn></mfrac><mo>≈</mo><mn>33.33</mn><mspace width="0.222em"></mspace><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">k</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+s_{xy}=\frac{SS_{xy}}{n-1}=\frac{100}{3}\approx33.33\ (\mathrm{g/day})(\mathrm{kg/day})
+</annotation></semantics></math></p>
+<p>正协方差表示这批记录总体上倾向于同向偏离，但数值大小受到计量单位影响。<br>
+Positive covariance indicates an overall tendency toward deviations in the same direction in these records, but its magnitude depends on units.</p>
+<p>不能分别排序两列再计算，因为那会破坏猪只之间的原始配对。<br>
+Do not sort the columns independently before calculation, because this destroys the original animal pairing.</p>
+<p>把多个性状的方差和协方差排成方阵，就得到后文育种模型会使用的协方差矩阵。<br>
+Arranging variances and covariances of multiple traits in a square array produces a covariance matrix used in later breeding models.</p>
+<p><a href="./chapter-03-1.html">03-1 详读</a>从本例推导矩阵，并对应解释 <a href="https://www.itl.nist.gov/div898/handbook/pmc/section5/pmc541.htm">NIST 原始页面</a>。<br>
+<a href="./chapter-03-1.html">Reading 03-1</a> builds the matrix from this example and explains the <a href="https://www.itl.nist.gov/div898/handbook/pmc/section5/pmc541.htm">original NIST page</a>.</p>
+</section>
+<section id="相关系数消除单位再比较-correlation-compare-without-units" class="level2">
+<h2 class="anchored" data-anchor-id="相关系数消除单位再比较-correlation-compare-without-units">09 · 相关系数：消除单位再比较 / Correlation: compare without units</h2>
+<p><strong>皮尔逊相关系数 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math></strong>用两个标准差的乘积缩放协方差，得到无单位的线性关系指标。<br>
+<strong>Pearson’s correlation coefficient <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math></strong> divides covariance by the product of two standard deviations to give a unitless measure of linear association.</p>
+<p><strong>线性关系</strong>表示用一条直线描述两个变量的变化趋势，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math> 的取值只能在 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">-1</annotation></semantics></math> 到 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math> 之间。<br>
+A <strong>linear relationship</strong> describes how two variables vary along a straight-line trend, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math> must lie between <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">-1</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>.</p>
+<p>采食量的离差平方和为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>+</mo><mn>0</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>0</mn><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">1+0+1+0=2</annotation></semantics></math>，所以 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>s</mi><mi>y</mi><mn>2</mn></msubsup><mo>=</mo><mn>2</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">s_y^2=2/3</annotation></semantics></math>、<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mi>y</mi></msub><mo>≈</mo><mn>0.8165</mn></mrow><annotation encoding="application/x-tex">s_y\approx0.8165</annotation></semantics></math> kg/day。<br>
+Feed intake has squared-deviation sum <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>+</mo><mn>0</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>0</mn><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">1+0+1+0=2</annotation></semantics></math>, giving <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>s</mi><mi>y</mi><mn>2</mn></msubsup><mo>=</mo><mn>2</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">s_y^2=2/3</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mi>y</mi></msub><mo>≈</mo><mn>0.8165</mn></mrow><annotation encoding="application/x-tex">s_y\approx0.8165</annotation></semantics></math> kg/day.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mfrac><msub><mi>s</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mrow><msub><mi>s</mi><mi>x</mi></msub><msub><mi>s</mi><mi>y</mi></msub></mrow></mfrac><mo>=</mo><mfrac><mrow><mi>S</mi><msub><mi>S</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub></mrow><msqrt><mrow><mi>S</mi><msub><mi>S</mi><mi>x</mi></msub><mi>S</mi><msub><mi>S</mi><mi>y</mi></msub></mrow></msqrt></mfrac><mo>=</mo><mfrac><mn>100</mn><msqrt><mrow><mn>20</mn><mo>,</mo><mn>000</mn><mo>×</mo><mn>2</mn></mrow></msqrt></mfrac><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">
+r=\frac{s_{xy}}{s_xs_y}
+=\frac{SS_{xy}}{\sqrt{SS_xSS_y}}
+=\frac{100}{\sqrt{20{,}000\times2}}=0.5
+</annotation></semantics></math></p>
+<ul>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">r&gt;0</annotation></semantics></math> 表示正向线性关系，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>&lt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">r&lt;0</annotation></semantics></math> 表示反向线性关系。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">r&gt;0</annotation></semantics></math> indicates a positive linear relationship, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>&lt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">r&lt;0</annotation></semantics></math> a negative one.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">r=1</annotation></semantics></math> 或 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mi>−</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">r=-1</annotation></semantics></math> 表示所有点精确落在一条非水平直线上，前提是两个变量都有变化。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">r=1</annotation></semantics></math> or <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mi>−</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">r=-1</annotation></semantics></math> means all points lie exactly on a nonhorizontal straight line, provided both variables vary.</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">r=0</annotation></semantics></math> 表示没有样本线性相关，不表示完全没有关系。<br>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">r=0</annotation></semantics></math> means no sample linear correlation, not necessarily no relationship.</p></li>
+</ul>
+<p>例如 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>2</mn><mo>,</mo><mi>−</mi><mn>1</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">x=[-2,-1,0,1,2]</annotation></semantics></math>、<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><msup><mi>x</mi><mn>2</mn></msup><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mn>4</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>4</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">y=x^2=[4,1,0,1,4]</annotation></semantics></math> 的相关为 0，却存在完全确定的曲线关系。<br>
+For example, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>2</mn><mo>,</mo><mi>−</mi><mn>1</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">x=[-2,-1,0,1,2]</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><msup><mi>x</mi><mn>2</mn></msup><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mn>4</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>4</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">y=x^2=[4,1,0,1,4]</annotation></semantics></math> have zero correlation despite a fully deterministic curved relationship.</p>
+<p>把 g 换成 kg 不会改变本例的相关系数，但会改变协方差数值。<br>
+Converting g to kg leaves this example’s correlation unchanged but changes its covariance.</p>
+<p>如果某个变量完全不变，其标准差为 0，相关公式无法计算。<br>
+If either variable is constant, its standard deviation is zero and correlation is undefined.</p>
+<p>相关 0.5 不表示解释了 50% 的原因，也不能把原始表型相关直接称为遗传相关。<br>
+A correlation of 0.5 does not mean explaining 50% of the cause, and raw phenotypic correlation cannot directly be called genetic correlation.</p>
+<p><a href="./chapter-03-2.html">03-2 详读</a>进一步解释平方后的 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>r</mi><mn>2</mn></msup><annotation encoding="application/x-tex">r^2</annotation></semantics></math> 和显著性，对应 <a href="https://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/correlat.htm">NIST 相关系数页面</a>。<br>
+<a href="./chapter-03-2.html">Reading 03-2</a> explains <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>r</mi><mn>2</mn></msup><annotation encoding="application/x-tex">r^2</annotation></semantics></math> and significance using the <a href="https://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/correlat.htm">NIST correlation page</a>.</p>
+</section>
+<section id="回归预测与残差-regression-prediction-and-residuals" class="level2">
+<h2 class="anchored" data-anchor-id="回归预测与残差-regression-prediction-and-residuals">10 · 回归、预测与残差 / Regression, prediction, and residuals</h2>
+<p><strong>回归</strong>用一个或多个变量描述结果的条件变化，本节用日增重 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> 拟合日采食量 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>。<br>
+<strong>Regression</strong> describes how an outcome varies conditionally on one or more variables, here fitting daily feed intake <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math> from daily gain <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>.</p>
+<p>简单直线写作 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>y</mi><mo accent="true">̂</mo></mover><mo>=</mo><mi>a</mi><mo>+</mo><mi>b</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">\hat{y}=a+bx</annotation></semantics></math>，其中 <strong>截距 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></strong> 是 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x=0</annotation></semantics></math> 时直线的预测值，<strong>斜率 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></strong> 是 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math> 每增加一个单位时预测值的变化量。<br>
+A simple line is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>y</mi><mo accent="true">̂</mo></mover><mo>=</mo><mi>a</mi><mo>+</mo><mi>b</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">\hat{y}=a+bx</annotation></semantics></math>, where the <strong>intercept <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></strong> is its prediction at <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x=0</annotation></semantics></math> and the <strong>slope <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></strong> is the predicted change per unit increase in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>.</p>
+<p><strong>普通最小二乘 OLS</strong>选择使残差平方和最小的截距和斜率，单变量且含截距时可按下式手算。<br>
+<strong>Ordinary least squares (OLS)</strong> selects the intercept and slope minimizing squared residuals, with the following hand calculation for one predictor and an intercept.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mfrac><mrow><mi>S</mi><msub><mi>S</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub></mrow><mrow><mi>S</mi><msub><mi>S</mi><mi>x</mi></msub></mrow></mfrac><mo>=</mo><mfrac><mn>100</mn><mrow><mn>20</mn><mo>,</mo><mn>000</mn></mrow></mfrac><mo>=</mo><mn>0.005</mn><mo>,</mo><mspace width="2.0em"></mspace><mi>a</mi><mo>=</mo><mover><mi>y</mi><mo accent="true">‾</mo></mover><mo>−</mo><mi>b</mi><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>=</mo><mn>3</mn><mo>−</mo><mn>0.005</mn><mo>×</mo><mn>800</mn><mo>=</mo><mi>−</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">
+b=\frac{SS_{xy}}{SS_x}=\frac{100}{20{,}000}=0.005,
+\qquad a=\bar{y}-b\bar{x}=3-0.005\times800=-1
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>y</mi><mo accent="true">̂</mo></mover><mo>=</mo><mi>−</mi><mn>1</mn><mo>+</mo><mn>0.005</mn><mi>x</mi></mrow><annotation encoding="application/x-tex">
+\hat{y}=-1+0.005x
+</annotation></semantics></math></p>
+<p>斜率表示日增重每增加 100 g/day，直线预测的采食量增加 0.5 kg/day，这是关联拟合而非因果结论。<br>
+The slope means each additional 100 g/day of gain corresponds to 0.5 kg/day more predicted intake, an association rather than a causal conclusion.</p>
+<p><strong>残差 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mi>i</mi></msub><annotation encoding="application/x-tex">e_i</annotation></semantics></math></strong>等于观测值减去模型预测值，正值表示实际值高于预测。<br>
+A <strong>residual <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mi>i</mi></msub><annotation encoding="application/x-tex">e_i</annotation></semantics></math></strong> is the observed value minus the fitted value, with a positive value indicating an observation above its prediction.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>y</mi><mo accent="true">̂</mo></mover><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mn>2.5</mn><mo>,</mo><mn>3</mn><mo>,</mo><mn>3</mn><mo>,</mo><mn>3.5</mn><mo stretchy="false" form="postfix">]</mo><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>e</mi><mi>i</mi></msub><mo>=</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>0.5</mn><mo>,</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mi>−</mi><mn>0.5</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">
+\hat{y}=[2.5,3,3,3.5],\qquad
+e_i=y_i-\hat{y}_i=[-0.5,0,1,-0.5]
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>S</mi><mi>E</mi><mo>=</mo><mo>∑</mo><msubsup><mi>e</mi><mi>i</mi><mn>2</mn></msubsup><mo>=</mo><mn>0.25</mn><mo>+</mo><mn>0</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>0.25</mn><mo>=</mo><mn>1.5</mn></mrow><annotation encoding="application/x-tex">
+SSE=\sum e_i^2=0.25+0+1+0.25=1.5
+</annotation></semantics></math></p>
+<p>在独立、同方差且直线均值模型正确的通常条件下，误差方差估计为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>S</mi><mi>E</mi><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo>−</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">SSE/(n-p)</annotation></semantics></math>，这里估计了截距和斜率两个参数，所以 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">p=2</annotation></semantics></math>。<br>
+Under the usual independent, equal-variance errors and correct linear mean model, error variance is estimated by <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>S</mi><mi>E</mi><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo>−</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">SSE/(n-p)</annotation></semantics></math>, with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">p=2</annotation></semantics></math> because an intercept and a slope were fitted.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>σ</mi><mo accent="true">̂</mo></mover><mi>e</mi><mn>2</mn></msubsup><mo>=</mo><mfrac><mn>1.5</mn><mrow><mn>4</mn><mo>−</mo><mn>2</mn></mrow></mfrac><mo>=</mo><mn>0.75</mn><mspace width="0.222em"></mspace><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">k</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">
+\hat{\sigma}_e^2=\frac{1.5}{4-2}=0.75\ (\mathrm{kg/day})^2
+</annotation></semantics></math></p>
+<p>这个残差方差不同于原始采食量的样本方差 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">2/3</annotation></semantics></math>，因为描述对象和分母都不同。<br>
+This residual variance differs from the raw intake sample variance <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">2/3</annotation></semantics></math> because both the target and denominator differ.</p>
+<p>截距为负不表示猪会负采食，因为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x=0</annotation></semantics></math> 远超本例 700—900 g/day 的数据范围。<br>
+A negative intercept does not imply negative feed intake, because <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">x=0</annotation></semantics></math> is far outside the observed range of 700–900 g/day.</p>
+<p><strong>外推</strong>是把模型用于观测范围之外，计算得到数字不等于这种预测有依据。<br>
+<strong>Extrapolation</strong> applies a model outside its observed range, and obtaining a number does not establish a justified prediction.</p>
+<p><strong>混杂</strong>是多个影响来源纠缠在一起，例如某公猪的后代全部获得更好的饲料，使父系与饲料作用难以分开。<br>
+<strong>Confounding</strong> occurs when influences are entangled, such as all offspring of one sire receiving better feed, making sire and diet effects hard to separate.</p>
+<p>残差可能包含未建模的环境、遗传作用与测量误差，因此不能直接当作育种值。<br>
+Residuals can contain unmodeled environment, genetics, and measurement error, so they are not automatically breeding values.</p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/pmd/section4/pmd431.htm">NIST 最小二乘</a>解释平方残差准则及参数数量与残差自由度的关系。<br>
+<a href="https://www.itl.nist.gov/div898/handbook/pmd/section4/pmd431.htm">NIST’s least-squares reference</a> explains the squared-residual criterion and the relationship between parameter count and residual degrees of freedom.</p>
+</section>
+<section id="标准误均值有多不稳定-standard-error-how-variable-is-the-mean" class="level2">
+<h2 class="anchored" data-anchor-id="标准误均值有多不稳定-standard-error-how-variable-is-the-mean">11 · 标准误：均值有多不稳定 / Standard error: how variable is the mean?</h2>
+<p><strong>抽样分布</strong>是按同样方法反复抽样并计算同一个统计量时，该统计量形成的分布。<br>
+A <strong>sampling distribution</strong> is the distribution of a statistic obtained by repeatedly sampling and calculating it in the same way.</p>
+<p><strong>标准误 SE</strong>是估计量抽样分布的标准差，反映重复抽样时估计结果有多大波动。<br>
+A <strong>standard error (SE)</strong> is the standard deviation of an estimator’s sampling distribution and reflects how estimates vary across repeated samples.</p>
+<p>对独立同分布且方差有限的样本，均值的真实标准误为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>σ</mi><mi>/</mi><msqrt><mi>n</mi></msqrt></mrow><annotation encoding="application/x-tex">\sigma/\sqrt{n}</annotation></semantics></math>，通常用 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>/</mi><msqrt><mi>n</mi></msqrt></mrow><annotation encoding="application/x-tex">s/\sqrt{n}</annotation></semantics></math> 估计。<br>
+For independent, identically distributed observations with finite variance, the mean’s true standard error is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>σ</mi><mi>/</mi><msqrt><mi>n</mi></msqrt></mrow><annotation encoding="application/x-tex">\sigma/\sqrt{n}</annotation></semantics></math>, usually estimated by <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>/</mi><msqrt><mi>n</mi></msqrt></mrow><annotation encoding="application/x-tex">s/\sqrt{n}</annotation></semantics></math>.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mrow><mi>S</mi><mi>E</mi></mrow><mo accent="true">̂</mo></mover><mo stretchy="false" form="prefix">(</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mi>s</mi><msqrt><mi>n</mi></msqrt></mfrac><mo>=</mo><mfrac><mrow><mn>81.649658</mn><mi>…</mi></mrow><msqrt><mn>4</mn></msqrt></mfrac><mo>≈</mo><mn>40.82</mn><mspace width="0.222em"></mspace><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow></mrow><annotation encoding="application/x-tex">
+\widehat{SE}(\bar{x})=\frac{s}{\sqrt{n}}
+=\frac{81.649658\ldots}{\sqrt{4}}
+\approx40.82\ \mathrm{g/day}
+</annotation></semantics></math></p>
+<p><strong>SD 描述猪与猪之间的分散，SE 描述估计出来的均值在重复抽样中的波动。</strong><br>
+<strong>SD describes spread among pigs, whereas SE describes how the estimated mean varies across repeated samples.</strong></p>
+<p>在总体分散程度和抽样条件相同时，样本量从 4 增到 16 会让真实均值标准误减半，但不会让猪之间的真实标准差减半。<br>
+With the same population spread and sampling conditions, increasing sample size from 4 to 16 halves the mean’s true standard error without halving the true standard deviation among pigs.</p>
+<p>同窝关系和同一动物的重复记录可能产生相关性，不能把记录总条数直接当作独立样本量。<br>
+Litter relationships and repeated animal records can create dependence, so the total record count cannot simply be treated as an independent sample size.</p>
+</section>
+<section id="置信区间给均值一个区间-confidence-interval-a-range-for-the-mean" class="level2">
+<h2 class="anchored" data-anchor-id="置信区间给均值一个区间-confidence-interval-a-range-for-the-mean">12 · 置信区间：给均值一个区间 / Confidence interval: a range for the mean</h2>
+<p><strong>置信区间</strong>是用样本构造的参数区间，其置信水平描述该构造方法在重复抽样中的覆盖比例。<br>
+A <strong>confidence interval</strong> is a sample-based interval for a parameter, with its confidence level describing the procedure’s coverage under repeated sampling.</p>
+<p>为了演示计算，额外假设四条记录来自独立同分布的正态总体且总体标准差未知。<br>
+For this calculation, additionally assume four independent observations from the same normal population with an unknown population standard deviation.</p>
+<p>这些条件是教学假设，不能由四条自拟数据本身证明。<br>
+These are teaching assumptions and cannot be established by four invented observations.</p>
+<p>总体均值的双侧 95% t 置信区间使用下面的公式。<br>
+A two-sided 95% t confidence interval for the population mean uses the following equation.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo>±</mo><msub><mi>t</mi><mrow><mn>0.975</mn><mo>,</mo><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msub><mfrac><mi>s</mi><msqrt><mi>n</mi></msqrt></mfrac></mrow><annotation encoding="application/x-tex">
+\bar{x}\pm t_{0.975,n-1}\frac{s}{\sqrt{n}}
+</annotation></semantics></math></p>
+<p><strong>t 分布</strong>用于这类标准差未知的正态均值推断，样本较小时比标准正态分布保留更厚的尾部。<br>
+The <strong>t distribution</strong> supports this normal-mean inference with unknown standard deviation and has heavier tails than the standard normal for small samples.</p>
+<p>双侧 95% 留下两端各 2.5%，所以累计概率取 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mn>0.025</mn><mo>=</mo><mn>0.975</mn></mrow><annotation encoding="application/x-tex">1-0.025=0.975</annotation></semantics></math>，自由度为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mo>−</mo><mn>1</mn><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">4-1=3</annotation></semantics></math>。<br>
+A two-sided 95% interval leaves 2.5% in each tail, so the cumulative probability is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mn>0.025</mn><mo>=</mo><mn>0.975</mn></mrow><annotation encoding="application/x-tex">1-0.025=0.975</annotation></semantics></math>, with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mo>−</mo><mn>1</mn><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">4-1=3</annotation></semantics></math> degrees of freedom.</p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda3672.htm">NIST t 表</a>给出此处临界值约为 3.182，以下统一使用这个舍入值。<br>
+The <a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda3672.htm">NIST t table</a> gives a critical value of approximately 3.182, and the calculations below consistently use that rounded value.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">n</mi></mrow><mo>=</mo><mn>3.182</mn><mo>×</mo><mn>40.824829</mn><mi>…</mi><mo>≈</mo><mn>129.90</mn><mspace width="0.222em"></mspace><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow></mrow><annotation encoding="application/x-tex">
+\mathrm{margin}=3.182\times40.824829\ldots\approx129.90\ \mathrm{g/day}
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">I</mi></mrow><mo>=</mo><mn>800</mn><mo>±</mo><mn>129.90</mn><mo>≈</mo><mo stretchy="false" form="prefix">[</mo><mn>670.10</mn><mo>,</mo><mn>929.90</mn><mo stretchy="false" form="postfix">]</mo><mspace width="0.222em"></mspace><mrow><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow></mrow><annotation encoding="application/x-tex">
+\mathrm{CI}=800\pm129.90\approx[670.10,929.90]\ \mathrm{g/day}
+</annotation></semantics></math></p>
+<p>95% 指长期反复按此方法构造的区间约有 95% 覆盖真实总体均值，不是 95% 的猪落在这个区间。<br>
+The 95% means approximately 95% of intervals constructed this way cover the true population mean over repeated sampling, not that 95% of pigs lie in this interval.</p>
+<p>在这里的频率学派解释中，已算出的区间与固定的真实均值之间只有覆盖或不覆盖，不能把 95% 直接说成真实均值落入本次区间的概率。<br>
+In this frequentist interpretation, the calculated interval either covers the fixed true mean or does not, so 95% is not directly a probability that the true mean lies in this particular interval.</p>
+<p><a href="https://itl.nist.gov/div898/handbook/eda/section3/eda352.htm">NIST 均值置信区间</a>是公式与覆盖解释的核对来源。<br>
+<a href="https://itl.nist.gov/div898/handbook/eda/section3/eda352.htm">NIST’s confidence interval for the mean</a> supports the equation and coverage interpretation.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/03-0-mean-t-confidence-interval.png" class="img-fluid figure-img"></p>
+<figcaption>总体平均日增重的 t 置信区间 / t confidence interval for mean daily gain</figcaption>
+</figure>
+</div>
+<p><strong>图 03-0B</strong>　中点是样本均值 800 g/day，线段两端 670.10 和 929.90 g/day 来自正文按 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>≈</mo><mn>3.182</mn></mrow><annotation encoding="application/x-tex">t\approx3.182</annotation></semantics></math> 计算的双侧 95% t 置信区间。<br>
+<strong>Figure 03-0B</strong>　The center marks the sample mean of 800 g/day, and the endpoints at 670.10 and 929.90 g/day use the chapter’s rounded <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>≈</mo><mn>3.182</mn></mrow><annotation encoding="application/x-tex">t\approx3.182</annotation></semantics></math> for the two-sided 95% t confidence interval.</p>
+<p>这个区间用来估计总体均值，并采用正文的独立正态抽样假设。<br>
+The interval estimates the population mean under the independent normal sampling assumptions described in the chapter.</p>
+</section>
+<section id="数据质量与三种误差-data-quality-and-three-kinds-of-error" class="level2">
+<h2 class="anchored" data-anchor-id="数据质量与三种误差-data-quality-and-three-kinds-of-error">13 · 数据质量与三种误差 / Data quality and three kinds of error</h2>
+<ul>
+<li><p><strong>缺失值</strong>表示没有可用记录，不能一律填成真实观测值 0。<br>
+A <strong>missing value</strong> means no observation is available and must not automatically be replaced by a genuine observed zero.</p></li>
+<li><p><strong>重复导入</strong>是把同一次测量算了多次，区别于同一动物在不同日期产生的合法重复测量。<br>
+<strong>Duplicate import</strong> counts one measurement multiple times and differs from legitimate repeated measurements of an animal on different dates.</p></li>
+<li><p><strong>随机误差</strong>使结果围绕目标波动，<strong>系统偏差</strong>使结果持续偏向某个方向。<br>
+<strong>Random error</strong> makes results fluctuate around a target, whereas <strong>systematic bias</strong> pushes results persistently in one direction.</p></li>
+<li><p><strong>浮点误差</strong>来自计算机有限位数表示数字，区别于抽到哪些动物造成的抽样误差。<br>
+<strong>Floating-point error</strong> comes from finite numerical representation and differs from sampling error caused by which animals are observed.</p></li>
+</ul>
+<p>统一单位、保留淘汰与缺失原因，并核对动物编号和测定批次，通常比盲目增加数据更先影响结果是否可信。<br>
+Consistent units, recorded exclusion and missingness reasons, and verified animal IDs and batches often affect credibility before simply adding more data does.</p>
+<p>更多数据能减少部分随机误差，但不会自动修正只留优秀猪造成的选择偏差。<br>
+More data can reduce some random error without automatically correcting selection bias from retaining only outstanding pigs.</p>
+<p><a href="./chapter-03-3.html">03-3 详读</a>提供可直接运行的标准库代码，并解释 <a href="https://www.itl.nist.gov/div898/strd/univ/certmethdef/lew.html">NIST 数值认证原文</a>中的精度概念。<br>
+<a href="./chapter-03-3.html">Reading 03-3</a> provides runnable standard-library code and explains precision in the <a href="https://www.itl.nist.gov/div898/strd/univ/certmethdef/lew.html">original NIST certification page</a>.</p>
+</section>
+<section id="一页复盘-one-page-recap" class="level2">
+<h2 class="anchored" data-anchor-id="一页复盘-one-page-recap">14 · 一页复盘 / One-page recap</h2>
+<ul>
+<li><p><strong>中心位置</strong>：日增重均值为 800 g/day，中位数和众数也都是 800 g/day。<br>
+<strong>Center:</strong> daily gain has mean 800 g/day, with median and mode also 800 g/day.</p></li>
+<li><p><strong>单性状分散</strong>：样本方差约为 6666.67 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(g/day)^2</annotation></semantics></math>，样本标准差约为 81.65 g/day。<br>
+<strong>Single-trait spread:</strong> sample variance is approximately 6666.67 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(g/day)^2</annotation></semantics></math> and sample standard deviation is approximately 81.65 g/day.</p></li>
+<li><p><strong>均值不确定性</strong>：满足独立抽样等条件时，估计的均值标准误约为 40.82 g/day。<br>
+<strong>Uncertainty in the mean:</strong> under conditions including independent sampling, the estimated standard error is approximately 40.82 g/day.</p></li>
+<li><p><strong>两个性状关系</strong>：样本协方差约为 33.33 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(g/day)(kg/day)</annotation></semantics></math>，相关系数为 0.5。<br>
+<strong>Two-trait association:</strong> sample covariance is approximately 33.33 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(g/day)(kg/day)</annotation></semantics></math> and correlation is 0.5.</p></li>
+<li><p><strong>模型剩余差异</strong>：直线拟合后的残差平方和为 1.5 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(kg/day)^2</annotation></semantics></math>，不能与原始日增重方差混用。<br>
+<strong>Remaining model variation:</strong> the fitted line has residual squared sum 1.5 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mi>g</mi><mi>/</mi><mi>d</mi><mi>a</mi><mi>y</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(kg/day)^2</annotation></semantics></math>, which must not be confused with raw daily-gain variance.</p></li>
+</ul>
+</section>
+<section id="用四个变化核对统计量-four-changes-that-check-the-statistics" class="level2">
+<h2 class="anchored" data-anchor-id="用四个变化核对统计量-four-changes-that-check-the-statistics">15 · 用四个变化核对统计量 / Four Changes That Check the Statistics</h2>
+<p>给四条日增重各加 100 g/day，均值从 800 变为 900 g/day，离差保持原样，样本方差仍为 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20</mn><mo>,</mo><mn>000</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">20{,}000/3</annotation></semantics></math>。<br>
+Adding 100 g/day to each record moves the mean from 800 to 900 g/day, leaves deviations unchanged, and keeps sample variance at <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20</mn><mo>,</mo><mn>000</mn><mi>/</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">20{,}000/3</annotation></semantics></math>.</p>
+<p>单位从 g/day 改成 kg/day 时，标准差除以 1000，约为 0.08165 kg/day，方差除以 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>1000</mn><mn>2</mn></msup><annotation encoding="application/x-tex">1000^2</annotation></semantics></math>，约为 0.006667 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">k</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(\mathrm{kg/day})^2</annotation></semantics></math>。<br>
+Converting g/day to kg/day divides the standard deviation by 1,000 to about 0.08165 kg/day and the variance by <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>1000</mn><mn>2</mn></msup><annotation encoding="application/x-tex">1000^2</annotation></semantics></math> to about 0.006667 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">k</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">/</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">y</mi></mrow><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(\mathrm{kg/day})^2</annotation></semantics></math>.</p>
+<p>四条记录来自本例假设的独立正态样本且总体标准差未知，因此均值区间用自由度 3、临界值约 3.182 的 t 分布。<br>
+The mean interval uses the t distribution with three degrees of freedom and a critical value near 3.182, because the four observations are assumed to be an independent normal sample with unknown population standard deviation.</p>
+<p>1.96 是标准正态分布的双侧 95% 临界值，在此处对应总体标准差已知的正态均值区间。<br>
+The value 1.96 is the two-sided 95% standard normal critical value, applicable here to the normal mean interval with known population standard deviation.</p>
+<p>若拿到 20 胎记录，我会查它们来自多少头母猪，再区分同一母猪重复记录和动物间亲缘带来的依赖。<br>
+With 20 litter records, I would check how many sows produced them, then distinguish dependence due to repeated records from dependence due to relationships among animals.</p>
+</section>
+<section id="我的核对笔记-my-verification-notes" class="level2">
+<h2 class="anchored" data-anchor-id="我的核对笔记-my-verification-notes">我的核对笔记 / My Verification Notes</h2>
+<p>遇到两套程序算出的方差不同，我先核对分母和输入单位，再用这组四条记录比较结果。<br>
+When two programs give different variances, I first check the denominator and input units, then compare their results on these four records.</p>
+<p>做完描述统计以后，我会另查抽样和依赖关系，因为数字算对了，结论仍取决于数据是怎么来的。<br>
+After calculating descriptive statistics, I separately check sampling and dependence, because the conclusion still depends on how the data were collected.</p>
+</section>
+<section id="延伸阅读本地详解-further-reading-local-explanations" class="level2">
+<h2 class="anchored" data-anchor-id="延伸阅读本地详解-further-reading-local-explanations">延伸阅读：本地详解 / Further reading: local explanations</h2>
+<p>下面三篇按原有三个网页分别扩写，先摘取少量原文，再用自拟数据补足解释和演算。<br>
+The following three notes expand the three original webpages individually, using brief excerpts followed by original explanations and worked examples.</p>
+<ul>
+<li><p><strong><a href="./chapter-03-1.html">03-1｜均值向量与协方差矩阵详读</a></strong>把表格、均值向量、协方差矩阵和相关矩阵连起来。<br>
+<strong><a href="./chapter-03-1.html">03-1 | Mean vectors and covariance matrices</a></strong> connects data tables, mean vectors, covariance matrices, and correlation matrices.</p></li>
+<li><p><strong><a href="./chapter-03-2.html">03-2｜相关系数与回归辨析详读</a></strong>解释相关、回归、<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>r</mi><mn>2</mn></msup><annotation encoding="application/x-tex">r^2</annotation></semantics></math>、显著性和因果误读。<br>
+<strong><a href="./chapter-03-2.html">03-2 | Correlation versus regression</a></strong> explains correlation, regression, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>r</mi><mn>2</mn></msup><annotation encoding="application/x-tex">r^2</annotation></semantics></math>, significance, and causal misinterpretation.</p></li>
+<li><p><strong><a href="./chapter-03-3.html">03-3｜均值方差标准差与数值校验详读</a></strong>区分统计不确定性与数值精度，并提供代码和预期输出。<br>
+<strong><a href="./chapter-03-3.html">03-3 | Mean, variance, standard deviation, and numerical checks</a></strong> separates statistical uncertainty from numerical precision and supplies code with expected output.</p></li>
+</ul>
+<p>三项原始网页分别为 <a href="https://www.itl.nist.gov/div898/handbook/pmc/section5/pmc541.htm">NIST 均值与协方差矩阵</a>、<a href="https://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/correlat.htm">NIST 相关系数</a>和 <a href="https://www.itl.nist.gov/div898/strd/univ/certmethdef/lew.html">NIST Lew 认证方法与定义</a>。<br>
+The three original pages are <a href="https://www.itl.nist.gov/div898/handbook/pmc/section5/pmc541.htm">NIST mean and covariance matrices</a>, <a href="https://www.itl.nist.gov/div898/software/dataplot/refman2/auxillar/correlat.htm">NIST correlation</a>, and <a href="https://www.itl.nist.gov/div898/strd/univ/certmethdef/lew.html">NIST Lew certification methods and definitions</a>.</p>
+<p>本次来源核对日期为 <strong>2026-10-17</strong>，主要计算均已独立复算。<br>
+Sources were checked on <strong>2026-10-17</strong>, and the main calculations were independently recomputed.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"可滚动的代码","output":"可滚动的输出"};
+  </script>
+<nav class="page-navigation" aria-label="页面">
+  <div class="nav-page nav-page-previous">
+      <a href="./chapter-02-4.html" class="pagination-link" aria-label="重复记录与永久环境 / Repeated records and permanent environment">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">重复记录与永久环境 / Repeated records and permanent environment</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./chapter-03-1.html" class="pagination-link" aria-label="均值向量与协方差矩阵详读 / Mean vectors and covariance matrices">
+        <span class="nav-page-text">均值向量与协方差矩阵详读 / Mean vectors and covariance matrices</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

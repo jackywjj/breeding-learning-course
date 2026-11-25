@@ -1,0 +1,7 @@
+title: Breeding Learning Course PDF
+version: 1.0.0
+contributes:
+  formats:
+    typst:
+      template-partials:
+        - typst-show.typ
