@@ -40,7 +40,7 @@ function Div(div)
   if diagram then
     diagram.attributes.width = "100%"
     diagram.attributes.height = nil
-    diagram.caption = pandoc.Inlines("育种工作流程 / Breeding workflow")
+    diagram.caption = pandoc.Inlines("本节示意图 / Section diagram")
     return pandoc.Para({diagram})
   end
 end

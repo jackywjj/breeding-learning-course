@@ -10,14 +10,19 @@ from pathlib import Path, PurePosixPath
 from tempfile import mkdtemp
 from urllib.parse import unquote
 
-from build_sample import CHAPTER_LINK, IMAGE_LINK, ROOT
+from build_sample import CHAPTER_LINK, IMAGE_LINK, ROOT, chapter_route
 
 
 SUMMARY_ENTRY = re.compile(r"^( *)\* \[([^\]]+)\]\(([^)]+\.md)\)\s*$")
-PAGE_NUMBER = re.compile(r"^(\d{2}-\d+)-")
 HOME_ART = "images/course-cover.png"
+PDF_DOWNLOAD = "downloads/breeding-learning-course.pdf"
+DOWNLOAD_LINK = re.compile(
+    rf'(<a\b[^>]*\bhref="(?:\./)?{re.escape(PDF_DOWNLOAD)}"[^>]*)(>.*?</li>)[ \t]*', re.DOTALL
+)
 SIDEBAR = re.compile(r'(<nav\b[^>]*\bid="quarto-sidebar"[^>]*>)(.*?)(</nav>)', re.DOTALL)
 SIDEBAR_LABEL = re.compile(r'(<span class="menu-text"[^>]*>)([^<>]*)(</span>)')
+SECTION_NAV = re.compile(r'(<nav\b[^>]*\bid="TOC"[^>]*>)(.*?)(</nav>)', re.DOTALL)
+SECTION_LABEL = re.compile(r'(<a\b[^>]*\bdata-scroll-target="[^"]*"[^>]*>)([^<>]*)(</a>)')
 
 
 def read_navigation(summary):
@@ -36,13 +41,7 @@ def read_navigation(summary):
             continue
         indent, label, source = match.groups()
         source = unquote(source)
-        if source in {"README.md", "00-目录.md"}:
-            target = "index.qmd" if source == "README.md" else "contents.qmd"
-        else:
-            match_number = PAGE_NUMBER.match(source)
-            if not match_number or PurePosixPath(source).name != source:
-                raise ValueError(f"Unrecognized chapter path in SUMMARY.md: {source}")
-            target = f"chapter-{match_number[1]}.qmd"
+        target = chapter_route(source)
         if source in pages or target in pages.values():
             raise ValueError(f"Duplicate chapter in SUMMARY.md: {source}")
         pages[source] = target
@@ -62,7 +61,7 @@ def read_navigation(summary):
     return pages, sidebar
 
 
-def format_sidebar(match):
+def format_navigation(match, label_pattern):
     def bilingual_label(label_match):
         opening, label, closing = label_match.groups()
         primary, separator, secondary = label.strip().partition(" / ")
@@ -74,7 +73,7 @@ def format_sidebar(match):
         )
 
     opening, contents, closing = match.groups()
-    return opening + SIDEBAR_LABEL.sub(bilingual_label, contents) + closing
+    return opening + label_pattern.sub(bilingual_label, contents) + closing
 
 
 def main():
@@ -138,13 +137,21 @@ def main():
     for asset in ("sample.css", "site.scss"):
         shutil.copyfile(ROOT / "tools" / asset, project / asset)
 
+    pdf = ROOT / "docs" / PDF_DOWNLOAD
+    has_pdf = pdf.is_file()
+    navbar = [{"href": "contents.qmd", "text": "全书目录"}]
+    if has_pdf:
+        (project / PDF_DOWNLOAD).parent.mkdir()
+        shutil.copyfile(pdf, project / PDF_DOWNLOAD)
+        navbar.append({"href": PDF_DOWNLOAD, "text": "下载 PDF", "icon": "download"})
+
     config = {
         "project": {"type": "website", "render": list(pages.values())},
         "website": {
             "title": "我用做软件的方式学育种",
             "search": True,
             "page-navigation": True,
-            "navbar": {"right": [{"href": "contents.qmd", "text": "全书目录"}]},
+            "navbar": {"right": navbar},
             "sidebar": {"style": "docked", "collapse-level": 2, "contents": sidebar},
         },
         "lang": "zh",
@@ -156,18 +163,31 @@ def main():
                 "toc": True,
                 "toc-title": "本页目录",
                 "html-math-method": "mathml",
-                "grid": {"sidebar-width": "320px", "margin-width": "210px"},
+                "grid": {"sidebar-width": "320px", "margin-width": "250px"},
             },
         },
     }
+    if has_pdf:
+        config["project"]["resources"] = [PDF_DOWNLOAD]
     (project / "_quarto.yml").write_text(json.dumps(config, ensure_ascii=False, indent=2), encoding="utf-8")
     subprocess.run([quarto, "render", "--to", "html"], cwd=project, check=True)
     site = project / "_site"
     for source, route in pages.items():
         page = site / Path(route).with_suffix(".html")
-        markup, count = SIDEBAR.subn(format_sidebar, page.read_text(encoding="utf-8"), count=1)
+        markup, count = SIDEBAR.subn(
+            lambda match: format_navigation(match, SIDEBAR_LABEL), page.read_text(encoding="utf-8"), count=1
+        )
         if not count:
             raise ValueError(f"Missing sidebar in rendered page for {source}")
+        markup = SECTION_NAV.sub(lambda match: format_navigation(match, SECTION_LABEL), markup, count=1)
+        if has_pdf:
+            markup, count = DOWNLOAD_LINK.subn(
+                lambda match: "\n".join(line.rstrip() for line in (match[1] + " download" + match[2]).split("\n")),
+                markup,
+                count=1,
+            )
+            if not count:
+                raise ValueError(f"Missing PDF download link in rendered page for {source}")
         page.write_text(markup, encoding="utf-8")
     (site / ".nojekyll").touch()
     if args.output:

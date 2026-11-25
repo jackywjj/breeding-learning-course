@@ -83,7 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-6774357434628ad73da102cd638e03af.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-ef31fc21480e25e3ff30a9e4fc0ce1f5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -136,6 +136,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link active" href="./contents.html" aria-current="page"> 
 <span class="menu-text">全书目录</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./downloads/breeding-learning-course.pdf" download> <i class="bi bi-download" role="img">
+</i>
+<span class="menu-text">下载 PDF</span></a>
+  </li>
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -481,35 +486,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">本页目录</h2>
    
   <ul>
-  <li><a href="#总体样本与一行数据-population-sample-and-a-data-row" id="toc-总体样本与一行数据-population-sample-and-a-data-row" class="nav-link active" data-scroll-target="#总体样本与一行数据-population-sample-and-a-data-row">01 · 总体、样本与一行数据 / Population, sample, and a data row</a></li>
-  <li><a href="#先认符号-read-the-notation-first" id="toc-先认符号-read-the-notation-first" class="nav-link" data-scroll-target="#先认符号-read-the-notation-first">02 · 先认符号 / Read the notation first</a></li>
-  <li><a href="#均值中位数与众数-mean-median-and-mode" id="toc-均值中位数与众数-mean-median-and-mode" class="nav-link" data-scroll-target="#均值中位数与众数-mean-median-and-mode">03 · 均值、中位数与众数 / Mean, median, and mode</a></li>
-  <li><a href="#样本方差五步手算-sample-variance-in-five-steps" id="toc-样本方差五步手算-sample-variance-in-five-steps" class="nav-link" data-scroll-target="#样本方差五步手算-sample-variance-in-five-steps">04 · 样本方差：五步手算 / Sample variance in five steps</a>
+  <li><a href="#总体样本与一行数据-population-sample-and-a-data-row" id="toc-总体样本与一行数据-population-sample-and-a-data-row" class="nav-link active" data-scroll-target="#总体样本与一行数据-population-sample-and-a-data-row"><span class="course-nav-zh" lang="zh">01 · 总体、样本与一行数据</span> <span class="course-nav-en" lang="en">Population, sample, and a data row</span></a></li>
+  <li><a href="#先认符号-read-the-notation-first" id="toc-先认符号-read-the-notation-first" class="nav-link" data-scroll-target="#先认符号-read-the-notation-first"><span class="course-nav-zh" lang="zh">02 · 先认符号</span> <span class="course-nav-en" lang="en">Read the notation first</span></a></li>
+  <li><a href="#均值中位数与众数-mean-median-and-mode" id="toc-均值中位数与众数-mean-median-and-mode" class="nav-link" data-scroll-target="#均值中位数与众数-mean-median-and-mode"><span class="course-nav-zh" lang="zh">03 · 均值、中位数与众数</span> <span class="course-nav-en" lang="en">Mean, median, and mode</span></a></li>
+  <li><a href="#样本方差五步手算-sample-variance-in-five-steps" id="toc-样本方差五步手算-sample-variance-in-five-steps" class="nav-link" data-scroll-target="#样本方差五步手算-sample-variance-in-five-steps"><span class="course-nav-zh" lang="zh">04 · 样本方差：五步手算</span> <span class="course-nav-en" lang="en">Sample variance in five steps</span></a>
   <ul class="collapse">
-  <li><a href="#第一步先求均值-step-1-calculate-the-mean" id="toc-第一步先求均值-step-1-calculate-the-mean" class="nav-link" data-scroll-target="#第一步先求均值-step-1-calculate-the-mean">第一步：先求均值 / Step 1: calculate the mean</a></li>
-  <li><a href="#第二步每条记录减去均值-step-2-subtract-the-mean" id="toc-第二步每条记录减去均值-step-2-subtract-the-mean" class="nav-link" data-scroll-target="#第二步每条记录减去均值-step-2-subtract-the-mean">第二步：每条记录减去均值 / Step 2: subtract the mean</a></li>
-  <li><a href="#第三步把每个离差平方-step-3-square-each-deviation" id="toc-第三步把每个离差平方-step-3-square-each-deviation" class="nav-link" data-scroll-target="#第三步把每个离差平方-step-3-square-each-deviation">第三步：把每个离差平方 / Step 3: square each deviation</a></li>
-  <li><a href="#第四步加总得到离差平方和-step-4-sum-the-squared-deviations" id="toc-第四步加总得到离差平方和-step-4-sum-the-squared-deviations" class="nav-link" data-scroll-target="#第四步加总得到离差平方和-step-4-sum-the-squared-deviations">第四步：加总得到离差平方和 / Step 4: sum the squared deviations</a></li>
-  <li><a href="#第五步除以-n1-step-5-divide-by-n1" id="toc-第五步除以-n1-step-5-divide-by-n1" class="nav-link" data-scroll-target="#第五步除以-n1-step-5-divide-by-n1">第五步：除以 n−1 / Step 5: divide by n−1</a></li>
-  <li><a href="#用-python-和-r-对一次手算-check-the-hand-calculation-in-python-and-r" id="toc-用-python-和-r-对一次手算-check-the-hand-calculation-in-python-and-r" class="nav-link" data-scroll-target="#用-python-和-r-对一次手算-check-the-hand-calculation-in-python-and-r">用 Python 和 R 对一次手算 / Check the Hand Calculation in Python and R</a></li>
+  <li><a href="#第一步先求均值-step-1-calculate-the-mean" id="toc-第一步先求均值-step-1-calculate-the-mean" class="nav-link" data-scroll-target="#第一步先求均值-step-1-calculate-the-mean"><span class="course-nav-zh" lang="zh">第一步：先求均值</span> <span class="course-nav-en" lang="en">Step 1: calculate the mean</span></a></li>
+  <li><a href="#第二步每条记录减去均值-step-2-subtract-the-mean" id="toc-第二步每条记录减去均值-step-2-subtract-the-mean" class="nav-link" data-scroll-target="#第二步每条记录减去均值-step-2-subtract-the-mean"><span class="course-nav-zh" lang="zh">第二步：每条记录减去均值</span> <span class="course-nav-en" lang="en">Step 2: subtract the mean</span></a></li>
+  <li><a href="#第三步把每个离差平方-step-3-square-each-deviation" id="toc-第三步把每个离差平方-step-3-square-each-deviation" class="nav-link" data-scroll-target="#第三步把每个离差平方-step-3-square-each-deviation"><span class="course-nav-zh" lang="zh">第三步：把每个离差平方</span> <span class="course-nav-en" lang="en">Step 3: square each deviation</span></a></li>
+  <li><a href="#第四步加总得到离差平方和-step-4-sum-the-squared-deviations" id="toc-第四步加总得到离差平方和-step-4-sum-the-squared-deviations" class="nav-link" data-scroll-target="#第四步加总得到离差平方和-step-4-sum-the-squared-deviations"><span class="course-nav-zh" lang="zh">第四步：加总得到离差平方和</span> <span class="course-nav-en" lang="en">Step 4: sum the squared deviations</span></a></li>
+  <li><a href="#第五步除以-n1-step-5-divide-by-n1" id="toc-第五步除以-n1-step-5-divide-by-n1" class="nav-link" data-scroll-target="#第五步除以-n1-step-5-divide-by-n1"><span class="course-nav-zh" lang="zh">第五步：除以 n−1</span> <span class="course-nav-en" lang="en">Step 5: divide by n−1</span></a></li>
+  <li><a href="#用-python-和-r-对一次手算-check-the-hand-calculation-in-python-and-r" id="toc-用-python-和-r-对一次手算-check-the-hand-calculation-in-python-and-r" class="nav-link" data-scroll-target="#用-python-和-r-对一次手算-check-the-hand-calculation-in-python-and-r"><span class="course-nav-zh" lang="zh">用 Python 和 R 对一次手算</span> <span class="course-nav-en" lang="en">Check the Hand Calculation in Python and R</span></a></li>
   </ul></li>
-  <li><a href="#为什么除以-n1-why-divide-by-n1" id="toc-为什么除以-n1-why-divide-by-n1" class="nav-link" data-scroll-target="#为什么除以-n1-why-divide-by-n1">05 · 为什么除以 n−1 / Why divide by n−1?</a>
+  <li><a href="#为什么除以-n1-why-divide-by-n1" id="toc-为什么除以-n1-why-divide-by-n1" class="nav-link" data-scroll-target="#为什么除以-n1-why-divide-by-n1"><span class="course-nav-zh" lang="zh">05 · 为什么除以 n−1</span> <span class="course-nav-en" lang="en">Why divide by n−1?</span></a>
   <ul class="collapse">
-  <li><a href="#用四种抽样结果看修正-see-the-correction-across-four-samples" id="toc-用四种抽样结果看修正-see-the-correction-across-four-samples" class="nav-link" data-scroll-target="#用四种抽样结果看修正-see-the-correction-across-four-samples">用四种抽样结果看修正 / See the correction across four samples</a></li>
-  <li><a href="#什么情况用-n-when-is-n-appropriate" id="toc-什么情况用-n-when-is-n-appropriate" class="nav-link" data-scroll-target="#什么情况用-n-when-is-n-appropriate">什么情况用 n / When is n appropriate?</a></li>
+  <li><a href="#用四种抽样结果看修正-see-the-correction-across-four-samples" id="toc-用四种抽样结果看修正-see-the-correction-across-four-samples" class="nav-link" data-scroll-target="#用四种抽样结果看修正-see-the-correction-across-four-samples"><span class="course-nav-zh" lang="zh">用四种抽样结果看修正</span> <span class="course-nav-en" lang="en">See the correction across four samples</span></a></li>
+  <li><a href="#什么情况用-n-when-is-n-appropriate" id="toc-什么情况用-n-when-is-n-appropriate" class="nav-link" data-scroll-target="#什么情况用-n-when-is-n-appropriate"><span class="course-nav-zh" lang="zh">什么情况用 n</span> <span class="course-nav-en" lang="en">When is n appropriate?</span></a></li>
   </ul></li>
-  <li><a href="#标准差把单位还原-standard-deviation-restore-the-units" id="toc-标准差把单位还原-standard-deviation-restore-the-units" class="nav-link" data-scroll-target="#标准差把单位还原-standard-deviation-restore-the-units">06 · 标准差：把单位还原 / Standard deviation: restore the units</a></li>
-  <li><a href="#分布极差与异常值-distribution-range-and-outliers" id="toc-分布极差与异常值-distribution-range-and-outliers" class="nav-link" data-scroll-target="#分布极差与异常值-distribution-range-and-outliers">07 · 分布、极差与异常值 / Distribution, range, and outliers</a></li>
-  <li><a href="#协方差两个性状一起偏离-covariance-two-traits-deviating-together" id="toc-协方差两个性状一起偏离-covariance-two-traits-deviating-together" class="nav-link" data-scroll-target="#协方差两个性状一起偏离-covariance-two-traits-deviating-together">08 · 协方差：两个性状一起偏离 / Covariance: two traits deviating together</a></li>
-  <li><a href="#相关系数消除单位再比较-correlation-compare-without-units" id="toc-相关系数消除单位再比较-correlation-compare-without-units" class="nav-link" data-scroll-target="#相关系数消除单位再比较-correlation-compare-without-units">09 · 相关系数：消除单位再比较 / Correlation: compare without units</a></li>
-  <li><a href="#回归预测与残差-regression-prediction-and-residuals" id="toc-回归预测与残差-regression-prediction-and-residuals" class="nav-link" data-scroll-target="#回归预测与残差-regression-prediction-and-residuals">10 · 回归、预测与残差 / Regression, prediction, and residuals</a></li>
-  <li><a href="#标准误均值有多不稳定-standard-error-how-variable-is-the-mean" id="toc-标准误均值有多不稳定-standard-error-how-variable-is-the-mean" class="nav-link" data-scroll-target="#标准误均值有多不稳定-standard-error-how-variable-is-the-mean">11 · 标准误：均值有多不稳定 / Standard error: how variable is the mean?</a></li>
-  <li><a href="#置信区间给均值一个区间-confidence-interval-a-range-for-the-mean" id="toc-置信区间给均值一个区间-confidence-interval-a-range-for-the-mean" class="nav-link" data-scroll-target="#置信区间给均值一个区间-confidence-interval-a-range-for-the-mean">12 · 置信区间：给均值一个区间 / Confidence interval: a range for the mean</a></li>
-  <li><a href="#数据质量与三种误差-data-quality-and-three-kinds-of-error" id="toc-数据质量与三种误差-data-quality-and-three-kinds-of-error" class="nav-link" data-scroll-target="#数据质量与三种误差-data-quality-and-three-kinds-of-error">13 · 数据质量与三种误差 / Data quality and three kinds of error</a></li>
-  <li><a href="#一页复盘-one-page-recap" id="toc-一页复盘-one-page-recap" class="nav-link" data-scroll-target="#一页复盘-one-page-recap">14 · 一页复盘 / One-page recap</a></li>
-  <li><a href="#用四个变化核对统计量-four-changes-that-check-the-statistics" id="toc-用四个变化核对统计量-four-changes-that-check-the-statistics" class="nav-link" data-scroll-target="#用四个变化核对统计量-four-changes-that-check-the-statistics">15 · 用四个变化核对统计量 / Four Changes That Check the Statistics</a></li>
-  <li><a href="#我的核对笔记-my-verification-notes" id="toc-我的核对笔记-my-verification-notes" class="nav-link" data-scroll-target="#我的核对笔记-my-verification-notes">我的核对笔记 / My Verification Notes</a></li>
-  <li><a href="#延伸阅读本地详解-further-reading-local-explanations" id="toc-延伸阅读本地详解-further-reading-local-explanations" class="nav-link" data-scroll-target="#延伸阅读本地详解-further-reading-local-explanations">延伸阅读：本地详解 / Further reading: local explanations</a></li>
+  <li><a href="#标准差把单位还原-standard-deviation-restore-the-units" id="toc-标准差把单位还原-standard-deviation-restore-the-units" class="nav-link" data-scroll-target="#标准差把单位还原-standard-deviation-restore-the-units"><span class="course-nav-zh" lang="zh">06 · 标准差：把单位还原</span> <span class="course-nav-en" lang="en">Standard deviation: restore the units</span></a></li>
+  <li><a href="#分布极差与异常值-distribution-range-and-outliers" id="toc-分布极差与异常值-distribution-range-and-outliers" class="nav-link" data-scroll-target="#分布极差与异常值-distribution-range-and-outliers"><span class="course-nav-zh" lang="zh">07 · 分布、极差与异常值</span> <span class="course-nav-en" lang="en">Distribution, range, and outliers</span></a></li>
+  <li><a href="#协方差两个性状一起偏离-covariance-two-traits-deviating-together" id="toc-协方差两个性状一起偏离-covariance-two-traits-deviating-together" class="nav-link" data-scroll-target="#协方差两个性状一起偏离-covariance-two-traits-deviating-together"><span class="course-nav-zh" lang="zh">08 · 协方差：两个性状一起偏离</span> <span class="course-nav-en" lang="en">Covariance: two traits deviating together</span></a></li>
+  <li><a href="#相关系数消除单位再比较-correlation-compare-without-units" id="toc-相关系数消除单位再比较-correlation-compare-without-units" class="nav-link" data-scroll-target="#相关系数消除单位再比较-correlation-compare-without-units"><span class="course-nav-zh" lang="zh">09 · 相关系数：消除单位再比较</span> <span class="course-nav-en" lang="en">Correlation: compare without units</span></a></li>
+  <li><a href="#回归预测与残差-regression-prediction-and-residuals" id="toc-回归预测与残差-regression-prediction-and-residuals" class="nav-link" data-scroll-target="#回归预测与残差-regression-prediction-and-residuals"><span class="course-nav-zh" lang="zh">10 · 回归、预测与残差</span> <span class="course-nav-en" lang="en">Regression, prediction, and residuals</span></a></li>
+  <li><a href="#标准误均值有多不稳定-standard-error-how-variable-is-the-mean" id="toc-标准误均值有多不稳定-standard-error-how-variable-is-the-mean" class="nav-link" data-scroll-target="#标准误均值有多不稳定-standard-error-how-variable-is-the-mean"><span class="course-nav-zh" lang="zh">11 · 标准误：均值有多不稳定</span> <span class="course-nav-en" lang="en">Standard error: how variable is the mean?</span></a></li>
+  <li><a href="#置信区间给均值一个区间-confidence-interval-a-range-for-the-mean" id="toc-置信区间给均值一个区间-confidence-interval-a-range-for-the-mean" class="nav-link" data-scroll-target="#置信区间给均值一个区间-confidence-interval-a-range-for-the-mean"><span class="course-nav-zh" lang="zh">12 · 置信区间：给均值一个区间</span> <span class="course-nav-en" lang="en">Confidence interval: a range for the mean</span></a></li>
+  <li><a href="#数据质量与三种误差-data-quality-and-three-kinds-of-error" id="toc-数据质量与三种误差-data-quality-and-three-kinds-of-error" class="nav-link" data-scroll-target="#数据质量与三种误差-data-quality-and-three-kinds-of-error"><span class="course-nav-zh" lang="zh">13 · 数据质量与三种误差</span> <span class="course-nav-en" lang="en">Data quality and three kinds of error</span></a></li>
+  <li><a href="#一页复盘-one-page-recap" id="toc-一页复盘-one-page-recap" class="nav-link" data-scroll-target="#一页复盘-one-page-recap"><span class="course-nav-zh" lang="zh">14 · 一页复盘</span> <span class="course-nav-en" lang="en">One-page recap</span></a></li>
+  <li><a href="#用四个变化核对统计量-four-changes-that-check-the-statistics" id="toc-用四个变化核对统计量-four-changes-that-check-the-statistics" class="nav-link" data-scroll-target="#用四个变化核对统计量-four-changes-that-check-the-statistics"><span class="course-nav-zh" lang="zh">15 · 用四个变化核对统计量</span> <span class="course-nav-en" lang="en">Four Changes That Check the Statistics</span></a></li>
+  <li><a href="#我的核对笔记-my-verification-notes" id="toc-我的核对笔记-my-verification-notes" class="nav-link" data-scroll-target="#我的核对笔记-my-verification-notes"><span class="course-nav-zh" lang="zh">我的核对笔记</span> <span class="course-nav-en" lang="en">My Verification Notes</span></a></li>
+  <li><a href="#延伸阅读本地详解-further-reading-local-explanations" id="toc-延伸阅读本地详解-further-reading-local-explanations" class="nav-link" data-scroll-target="#延伸阅读本地详解-further-reading-local-explanations"><span class="course-nav-zh" lang="zh">延伸阅读：本地详解</span> <span class="course-nav-en" lang="en">Further reading: local explanations</span></a></li>
   </ul>
 </nav>
     </div>

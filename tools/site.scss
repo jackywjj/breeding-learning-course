@@ -15,20 +15,22 @@ $font-family-sans-serif: "Hiragino Sans GB", "PingFang SC", "Microsoft YaHei", s
 #quarto-header { border-bottom: 1px solid #e9d6c9; }
 #title-block-header .title { color: $primary; }
 
+#quarto-sidebar .menu-text,
+#TOC a.nav-link {
+  display: grid;
+  gap: 0.13rem;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.course-nav-zh { font-size: 0.91rem; font-weight: 600; }
+.course-nav-en { font-size: 0.76rem; color: #66524c; }
+
 #quarto-sidebar {
   .sidebar-item { margin-block: 0.32rem 0.55rem; }
 
   .sidebar-item-text { min-width: 0; }
 
-  .menu-text {
-    display: grid;
-    gap: 0.13rem;
-    min-width: 0;
-    line-height: 1.35;
-  }
-
-  .course-nav-zh { font-size: 0.91rem; font-weight: 600; }
-  .course-nav-en { font-size: 0.76rem; color: #66524c; }
   .sidebar-link.active .course-nav-en { color: inherit; }
 
   .sidebar-section {
@@ -36,6 +38,25 @@ $font-family-sans-serif: "Hiragino Sans GB", "PingFang SC", "Microsoft YaHei", s
     margin-inline-start: 0.18rem;
     padding-inline-start: 0.65rem;
   }
+}
+
+#TOC {
+  #toc-title { margin-block-end: 0.45rem; font-weight: 650; }
+  > ul { margin-inline-start: 0; }
+  ul ul { margin-inline-start: 0.6rem; }
+
+  a.nav-link {
+    padding: 0.35rem 0.35rem 0.35rem 0.55rem;
+    border-inline-start-color: #ead9cf;
+    overflow-wrap: anywhere;
+  }
+
+  a.nav-link.active {
+    background-color: #fbf3eb;
+    border-inline-start: 2px solid $primary;
+  }
+
+  a.nav-link.active .course-nav-en { color: inherit; }
 }
 
 @media (max-width: 991.98px) {

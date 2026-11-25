@@ -31,7 +31,7 @@
     #line(length: 100%, stroke: 0.55pt + rgb("#d9b0a6"))
   ]
   $if(toc)$
-  block(above: 0pt, below: 16pt, outline(title: [样章目录 / Sample contents], depth: $toc-depth$))
+  block(above: 0pt, below: 16pt, outline(title: [$toc-title$], depth: $toc-depth$))
   $endif$
   doc
 }
